@@ -2,11 +2,13 @@ import ProductCard from '../components/ProductCard';
 import FeaturedItemCard from '../components/FeaturedItemCard';
 import Hero from '../components/Hero';
 import { getFeaturedProducts } from '../lib/products';
+import { listCarouselSlides } from '../lib/carousel';
 
 export const revalidate = 60;
 
 export default async function HomePage() {
   const products = await getFeaturedProducts();
+  const carouselSlides = await listCarouselSlides();
 
   // Featured items data
   const featuredItems = [
@@ -29,7 +31,7 @@ export default async function HomePage() {
   return (
     <>
       <h1 className="sr-only">Zaxis Studio — Featured 3D Prints</h1>
-      <Hero products={products} />
+      <Hero slides={carouselSlides} />
 
       {/* Products Section */}
       <section className="products-section">

@@ -1,40 +1,39 @@
 "use client";
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import AddToCartButton from './AddToCartButton';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-export default function Hero({ products = [] }) {
-  const heroProducts = products.slice(0, 3);
+export default function Hero({ slides = [] }) {
+  const heroSlides = slides.length > 0 ? slides : [];
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
 
   // Auto-rotation effect
   useEffect(() => {
-    if (!isAutoPlay || heroProducts.length === 0) return;
+    if (!isAutoPlay || heroSlides.length === 0) return;
 
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroProducts.length);
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     }, 5000);
 
     return () => clearInterval(timer);
-  }, [isAutoPlay, heroProducts.length]);
+  }, [isAutoPlay, heroSlides.length]);
 
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowLeft') {
-        setCurrentSlide((prev) => (prev - 1 + heroProducts.length) % heroProducts.length);
+        setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
         setIsAutoPlay(false);
       } else if (e.key === 'ArrowRight') {
-        setCurrentSlide((prev) => (prev + 1) % heroProducts.length);
+        setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
         setIsAutoPlay(false);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [heroProducts.length]);
+  }, [heroSlides.length]);
 
   const goToSlide = (index) => {
     setCurrentSlide(index);
@@ -51,12 +50,7 @@ export default function Hero({ products = [] }) {
     setIsAutoPlay(false);
   };
 
-  if (heroProducts.length === 0) return null;
-
-  const currentProduct = heroProducts[currentSlide];
-  const isStock = !currentProduct.image_url || /picsum\.photos/i.test(currentProduct.image_url);
-  const src = isStock ? '/placeholder.svg' : currentProduct.image_url;
-  const alt = isStock ? `Image Coming Soon — ${currentProduct.title}` : currentProduct.title;
+  if (heroSlides.length === 0) return null;
 
   return (
     <section className="hero">
@@ -71,14 +65,14 @@ export default function Hero({ products = [] }) {
         >
           {/* Carousel slides */}
           <div className="carousel-slides">
-            {heroProducts.map((product, index) => {
-              const isStockImg = !product.image_url || /picsum\.photos/i.test(product.image_url);
-              const imgSrc = isStockImg ? '/placeholder.svg' : product.image_url;
-              const imgAlt = isStockImg ? `Image Coming Soon — ${product.title}` : product.title;
+            {heroSlides.map((slide, index) => {
+              const isStockImg = !slide.image_url || /picsum\.photos/i.test(slide.image_url);
+              const imgSrc = isStockImg ? '/placeholder.svg' : slide.image_url;
+              const imgAlt = isStockImg ? `Image Coming Soon — ${slide.title}` : slide.title;
 
               return (
                 <div
-                  key={product.id}
+                  key={slide.id}
                   className={`carousel-slide ${index === currentSlide ? 'active' : ''}`}
                   aria-hidden={index !== currentSlide}
                 >
@@ -91,19 +85,18 @@ export default function Hero({ products = [] }) {
                     className="carousel-image"
                   />
 
-                  {/* Product overlay */}
+                  {/* Slide overlay */}
                   <div className="carousel-overlay">
                     <div className="overlay-content">
-                      <h2 className="overlay-title">{product.title}</h2>
-                      <p className="overlay-price">₹{product.price}</p>
+                      <h2 className="overlay-title">{slide.title}</h2>
+                      <p className="overlay-price">{slide.price}</p>
                       <div className="overlay-actions">
-                        <AddToCartButton product={product} />
                         <a
-                          className="btn buy-now"
-                          href={`/checkout?buy=${product.id}`}
-                          aria-label={`Buy ${product.title} now`}
+                          className="btn shop-now"
+                          href="/products"
+                          aria-label="Shop now"
                         >
-                          Buy Now
+                          Shop Now
                         </a>
                       </div>
                     </div>
@@ -133,7 +126,7 @@ export default function Hero({ products = [] }) {
 
           {/* Pagination dots */}
           <div className="carousel-dots" role="tablist" aria-label="Slide navigation">
-            {heroProducts.map((_, index) => (
+            {heroSlides.map((_, index) => (
               <button
                 key={index}
                 className={`carousel-dot ${index === currentSlide ? 'active' : ''}`}
