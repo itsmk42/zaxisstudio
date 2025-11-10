@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '../../../lib/supabaseServer';
 
 function json(status, payload) {
@@ -45,6 +46,14 @@ export async function POST(req) {
       console.error('[products:delete] error', error);
       return json(500, { error: error.message });
     }
+    // Revalidate cached pages when product is deleted
+    try {
+      revalidatePath('/');
+      revalidatePath('/products');
+      revalidatePath('/product/[id]', 'page');
+    } catch (e) {
+      console.warn('[products:delete] cache revalidation warning', e);
+    }
     return json(200, { ok: true });
   }
   if (body._method === 'PUT' || body._method === 'PATCH') {
@@ -53,6 +62,14 @@ export async function POST(req) {
     if (error) {
       console.error('[products:update] error', error);
       return json(500, { error: error.message });
+    }
+    // Revalidate cached pages when product is updated
+    try {
+      revalidatePath('/');
+      revalidatePath('/products');
+      revalidatePath('/product/[id]', 'page');
+    } catch (e) {
+      console.warn('[products:update] cache revalidation warning', e);
     }
     return json(200, data);
   }
@@ -69,6 +86,13 @@ export async function POST(req) {
       return json(500, { error: 'table_missing', details: ['products table not found — apply migration at db/products.sql'] });
     }
     return json(500, { error: message });
+  }
+  // Revalidate cached pages when new product is created
+  try {
+    revalidatePath('/');
+    revalidatePath('/products');
+  } catch (e) {
+    console.warn('[products:create] cache revalidation warning', e);
   }
   return json(201, data);
 }
@@ -88,5 +112,13 @@ export async function DELETE(req) {
   const id = searchParams.get('id');
   const { error } = await supabaseServer().from('products').delete().eq('id', id);
   if (error) return new NextResponse(error.message, { status: 500 });
+  // Revalidate cached pages when product is deleted
+  try {
+    revalidatePath('/');
+    revalidatePath('/products');
+    revalidatePath('/product/[id]', 'page');
+  } catch (e) {
+    console.warn('[products:delete] cache revalidation warning', e);
+  }
   return NextResponse.json({ ok: true });
 }
