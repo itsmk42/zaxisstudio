@@ -41,12 +41,12 @@ export default function Hero({ slides = [] }) {
   };
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % heroProducts.length);
+    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     setIsAutoPlay(false);
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + heroProducts.length) % heroProducts.length);
+    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
     setIsAutoPlay(false);
   };
 
