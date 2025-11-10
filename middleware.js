@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { verifySession, cookies } from './lib/adminAuth';
 
-export function middleware(req) {
+export async function middleware(req) {
   const { pathname } = req.nextUrl;
 
   // Enforce HTTPS for admin routes in production (allow http on localhost)
@@ -16,7 +16,7 @@ export function middleware(req) {
 
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
     const token = req.cookies.get(cookies.SESSION_COOKIE)?.value;
-    const payload = token ? verifySession(token) : null;
+    const payload = token ? await verifySession(token) : null;
     if (!payload || (payload.role !== 'admin' && payload.role !== 'superadmin')) {
       const url = req.nextUrl.clone();
       url.pathname = '/admin/login';

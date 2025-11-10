@@ -2,11 +2,16 @@
   "name": "zaxisstudio",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "vitest"
+    "test": "vitest",
+    "setup:admin": "node scripts/setup-admin.js",
+    "setup:check": "node scripts/setup-admin.js --check-only",
+    "verify:admin": "node scripts/verify-admin.js",
+    "check:env": "node scripts/check-env.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",

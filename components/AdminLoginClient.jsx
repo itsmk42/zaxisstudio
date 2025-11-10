@@ -10,7 +10,7 @@ export default function AdminLoginClient() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch('/api/admin/login/csrf');
+        const res = await fetch('/api/admin/login/csrf', { credentials: 'include' });
         const data = await res.json();
         setCsrf(data.token);
       } catch {}
@@ -20,7 +20,12 @@ export default function AdminLoginClient() {
     e.preventDefault();
     setStatus('');
     if (!username || !password) { setStatus('Enter username and password'); return; }
-    const res = await fetch('/api/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password, csrf }) });
+    const res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ username, password, csrf })
+    });
     if (res.ok) { window.location.href = '/admin'; }
     else {
       try {

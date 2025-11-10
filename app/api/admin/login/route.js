@@ -9,6 +9,7 @@ export async function POST(req) {
   const cookieHeader = req.headers.get('cookie') || '';
   const match = cookieHeader.match(new RegExp(`${cookies.CSRF_COOKIE}=([^;]+)`));
   const csrfCookie = match ? match[1] : '';
+
   if (!csrf || !csrfCookie || csrf !== csrfCookie) {
     return new NextResponse('CSRF validation failed', { status: 403 });
   }
