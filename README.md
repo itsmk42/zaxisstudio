@@ -142,3 +142,35 @@ curl -X POST http://localhost:3000/api/admin/users \
 - Ensure `ADMIN_SESSION_SECRET` is set in `.env.local` and deploy on HTTPS so cookies are marked `secure`.
 - Middleware verifies the signed session and restricts `/admin/*` routes to `role=admin` users.
 - The legacy `ADMIN_PASSWORD` cookie check is removed.
+
+### Secure Admin User Creation (Supabase Admin API)
+- Prerequisites:
+  - Confirm you have admin privileges in your Supabase project.
+  - Enable Email/Password authentication in Supabase Auth settings.
+  - Set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in server environment.
+- Server-side admin creation:
+  - Use the endpoint `POST /api/admin/users` with JSON: `{ "email": "admin@example.com", "password": "...strong...", "role": "admin" }`.
+  - Password rules: minimum 12 characters including uppercase, lowercase, number, and special character.
+  - The server creates a Supabase Auth user via Admin API and upserts a hashed record into `public.admin_users`.
+- Test seed endpoint:
+  - `POST /api/admin/users/seed` will securely create an admin in development.
+  - Configure `ADMIN_SEED_TOKEN` to enable in non-dev environments and set `ADMIN_SEED_EMAIL`, `ADMIN_SEED_PASSWORD` to control credentials.
+  - In development, the endpoint returns generated test credentials; in production, you must supply header `x-admin-seed-token: $ADMIN_SEED_TOKEN` and credentials are not returned.
+- Security considerations:
+  - Never create admin users via client-side code.
+  - Enable multi-factor authentication (MFA) for admin accounts in Supabase Dashboard (Authentication → Policies → MFA).
+  - `public.admin_users` has RLS enabled with a deny-all policy; server uses the service role key, which bypasses RLS.
+
+### Admin Login and Lockout
+- Login uses CSRF and a signed cookie.
+- Error handling returns structured JSON with `error` and optional `details`.
+- Account lockout:
+  - After 5 failed attempts, the account is locked for 15 minutes.
+  - On success, counters reset.
+- Apply lockout migration:
+  - Run `db/admin_users_lockout.sql` to add `failed_attempts`, `locked_until`, `last_failed_at`, and enable strict RLS.
+
+### Testing Requirements
+- Verify admin login works with correct credentials at `/admin/login`.
+- Confirm clear error messages for invalid attempts (e.g., invalid credentials, CSRF validation, lockout details).
+- Test account lockout by attempting 5 invalid logins and waiting for unlock, or manually clear `locked_until` in DB.

@@ -21,7 +21,20 @@ export default function AdminLoginClient() {
     setStatus('');
     if (!username || !password) { setStatus('Enter username and password'); return; }
     const res = await fetch('/api/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password, csrf }) });
-    if (res.ok) { window.location.href = '/admin'; } else { setStatus('Invalid password'); }
+    if (res.ok) { window.location.href = '/admin'; }
+    else {
+      try {
+        const data = await res.json();
+        const msg = data?.error || 'Login failed';
+        if (data?.details?.locked_until) {
+          setStatus(`${msg}. Try again after ${new Date(data.details.locked_until).toLocaleString()}`);
+        } else {
+          setStatus(msg);
+        }
+      } catch {
+        setStatus('Login failed');
+      }
+    }
   }
   return (
     <form className="form" onSubmit={login}>
