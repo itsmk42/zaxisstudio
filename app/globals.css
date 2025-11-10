@@ -344,50 +344,233 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
 .hero-content {
   position: relative;
   z-index: 1;
-  display: grid;
-  place-items: center;
-  padding: 20px 16px;
-  max-width: 1040px;
-  margin: 0 auto;
   width: 100%;
+  padding: 0;
+  margin: 0;
 }
-.hero-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+
+/* Carousel container */
+.carousel-container {
+  position: relative;
   width: 100%;
-}
-@media (max-width: 900px) {
-  .hero-cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 600px) {
-  .hero-cards-grid {
-    grid-template-columns: 1fr;
-  }
-}
-.hero-card {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  height: 400px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.95);
+  background: #000;
+}
+
+@media (max-width: 768px) {
+  .carousel-container {
+    height: 300px;
+  }
+}
+
+@media (max-width: 600px) {
+  .carousel-container {
+    height: 250px;
+  }
+}
+
+/* Carousel slides */
+.carousel-slides {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.carousel-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.6s ease-in-out;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-slide.active {
+  opacity: 1;
+  z-index: 2;
+}
+
+.carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Product overlay */
+.carousel-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4), transparent);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 24px 16px;
+  z-index: 3;
+}
+
+.overlay-content {
+  text-align: center;
+  color: #fff;
+  width: 100%;
+  max-width: 600px;
+}
+
+.overlay-title {
+  margin: 0 0 8px;
+  font-size: clamp(18px, 4vw, 32px);
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.overlay-price {
+  margin: 0 0 16px;
+  font-size: clamp(16px, 3vw, 24px);
+  font-weight: 700;
+  color: #00D9FF;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.overlay-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.overlay-actions .btn {
+  padding: 10px 20px;
+  font-size: 13px;
+  min-height: 44px;
+  flex: 0 1 auto;
+}
+
+@media (max-width: 600px) {
+  .overlay-actions {
+    gap: 8px;
+  }
+
+  .overlay-actions .btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+/* Navigation arrows */
+.carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
   transition: all 0.2s ease;
+  min-height: 48px;
+  min-width: 48px;
 }
-.hero-card:hover {
-  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
-  transform: translateY(-4px);
+
+.carousel-nav:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: translateY(-50%) scale(1.1);
 }
-.hero-card:focus-within {
+
+.carousel-nav:focus-visible {
   outline: 2px solid #00D9FF;
   outline-offset: 2px;
 }
-.hero-media img { width: 100%; height: auto; display: block; }
-.hero-info { padding: 12px; display: flex; flex-direction: column; }
-.hero-title { margin: 0 0 8px; font-size: clamp(15px, 1.87vw, 18px); font-weight: 400; color: #1a1a1a; }
-.hero-price { color: var(--deep-teal); font-weight: 700; font-size: 16px; margin: 0 0 12px; }
+
+.carousel-nav-prev {
+  left: 16px;
+}
+
+.carousel-nav-next {
+  right: 16px;
+}
+
+@media (max-width: 600px) {
+  .carousel-nav {
+    width: 40px;
+    height: 40px;
+    min-height: 40px;
+    min-width: 40px;
+  }
+
+  .carousel-nav-prev {
+    left: 8px;
+  }
+
+  .carousel-nav-next {
+    right: 8px;
+  }
+}
+
+/* Pagination dots */
+.carousel-dots {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 4;
+}
+
+.carousel-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.carousel-dot::before {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transition: all 0.2s ease;
+}
+
+.carousel-dot.active::before {
+  background: #00D9FF;
+  box-shadow: 0 0 8px rgba(0, 217, 255, 0.6);
+}
+
+.carousel-dot:hover::before {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.carousel-dot:focus-visible {
+  outline: 2px solid #00D9FF;
+  outline-offset: 2px;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .carousel-slide {
+    transition: none;
+  }
+}
 
 /* Hero animations removed - no longer needed for static cards */
 
