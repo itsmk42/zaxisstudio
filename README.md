@@ -107,6 +107,13 @@ Server writes require `SUPABASE_SERVICE_ROLE_KEY` to be set.
 
 - Error: permissions/RLS
   - Action: Use `SUPABASE_SERVICE_ROLE_KEY` for server writes or configure RLS policies as needed.
+
+### Troubleshooting homepage display
+
+- Symptom: Homepage shows only placeholders or appears mostly blank
+  - Cause: `public.products` exists but has zero rows in a fresh environment.
+  - Action: Insert products via `POST /api/products` (requires `SUPABASE_SERVICE_ROLE_KEY`) or rely on demo fallback.
+  - Note: The homepage falls back to demo items when `products` is empty to avoid a blank UI in new/staging setups.
 ## Admin Account & Security
 
 This project now uses a database-backed admin account with bcrypt hashing, signed session cookies, and CSRF protection.
@@ -136,6 +143,37 @@ curl -X POST http://localhost:3000/api/admin/users \
 ```
 
 3. Access the admin login at `/admin/login`. The form uses CSRF tokens and sets an `admin_session` cookie with `httpOnly`, `sameSite=Strict`, and `secure` (in production).
+
+4. Confirm admin DB migration applied
+
+If you encounter a `Database error` about `public.admin_users` missing when creating or logging in, apply both migrations in Supabase SQL editor:
+
+```
+-- db/admin_users.sql
+create table if not exists public.admin_users (
+  id bigserial primary key,
+  username text unique not null,
+  password_hash text not null,
+  role text not null default 'admin',
+  created_at timestamptz not null default now()
+);
+create index if not exists admin_users_username_idx on public.admin_users (username);
+
+-- db/admin_users_lockout.sql
+alter table if exists public.admin_users
+  add column if not exists failed_attempts integer not null default 0,
+  add column if not exists locked_until timestamptz,
+  add column if not exists last_failed_at timestamptz;
+alter table if exists public.admin_users enable row level security;
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies where schemaname = 'public' and tablename = 'admin_users' and policyname = 'deny all admin_users'
+  ) then
+    execute 'create policy "deny all admin_users" on public.admin_users for all using (false) with check (false)';
+  end if;
+end $$;
+```
 
 ### Notes
 
@@ -174,3 +212,24 @@ curl -X POST http://localhost:3000/api/admin/users \
 - Verify admin login works with correct credentials at `/admin/login`.
 - Confirm clear error messages for invalid attempts (e.g., invalid credentials, CSRF validation, lockout details).
 - Test account lockout by attempting 5 invalid logins and waiting for unlock, or manually clear `locked_until` in DB.
+
+## Staging Verification Checklist
+
+- Homepage
+  - Confirm hero banner displays a product or the demo placeholder.
+  - Ensure featured grid shows items; if DB empty, demo items appear.
+  - Check browser console and network for 4xx/5xx errors.
+
+- Admin Access
+  - Apply `db/admin_users.sql` and `db/admin_users_lockout.sql` in Supabase.
+  - Create or upsert admin via `POST /api/admin/users` using service role key.
+  - Test login with `m42k@admin.com` and `Ss@1234qwerty`.
+  - Validate middleware redirects unauthorized users to `/admin/login`.
+
+- Cross-browser
+  - Smoke test in Chrome, Firefox, and Safari.
+  - Verify CSS/JS load correctly and DOM structure renders consistently.
+
+- Documentation
+  - Record any environment changes and SQL you applied.
+  - Note error messages and resolutions for future reference.
