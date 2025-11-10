@@ -13,7 +13,8 @@ export default function ProductForm() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...form, price: Number(form.price) })
     });
-    setStatus(res.ok ? 'Saved!' : 'Failed');
+    const json = await res.json().catch(() => ({}));
+    setStatus(res.ok ? 'Saved!' : `Failed: ${json?.error || (Array.isArray(json?.details) ? json.details.join(', ') : 'Unknown error')}`);
     if (res.ok) setForm({ title: '', price: '', image_url: '' });
   }
 
@@ -22,11 +23,11 @@ export default function ProductForm() {
       <h2>Add Product</h2>
       <label>
         Title
-        <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+        <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
       </label>
       <label>
         Price (₹)
-        <input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
+        <input required type="number" min="0" step="1" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
       </label>
       <label>
         Image URL

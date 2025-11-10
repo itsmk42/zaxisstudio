@@ -1,6 +1,19 @@
 import { NextResponse } from 'next/server';
 import { supabaseServer } from '../../../lib/supabaseServer';
 
+function json(status, payload) {
+  return NextResponse.json(payload, { status });
+}
+
+function validatePayload(body) {
+  const errors = [];
+  const title = typeof body.title === 'string' ? body.title.trim() : '';
+  const price = Number(body.price);
+  if (!title) errors.push('title is required');
+  if (!Number.isFinite(price) || price < 0) errors.push('price must be a non-negative number');
+  return { valid: errors.length === 0, errors, title, price, image_url: body.image_url || '' };
+}
+
 export async function GET() {
   const { data, error } = await supabaseServer().from('products').select('*');
   if (error) return new NextResponse(error.message, { status: 500 });
@@ -16,24 +29,48 @@ export async function POST(req) {
     const form = await req.formData();
     body = Object.fromEntries(form);
   }
+  // Explicit environment sanity for writes: requires service role key
+  if (!process.env.SUPABASE_URL) {
+    return json(500, { error: 'Supabase URL not configured (SUPABASE_URL).' });
+  }
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return json(500, { error: 'Supabase service role key missing (SUPABASE_SERVICE_ROLE_KEY). Writes are not permitted.' });
+  }
   // Support method override via form _method
   if (body._method === 'DELETE') {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id') || body.id;
     const { error } = await supabaseServer().from('products').delete().eq('id', id);
-    if (error) return new NextResponse(error.message, { status: 500 });
-    return NextResponse.json({ ok: true });
+    if (error) {
+      console.error('[products:delete] error', error);
+      return json(500, { error: error.message });
+    }
+    return json(200, { ok: true });
   }
   if (body._method === 'PUT' || body._method === 'PATCH') {
     const { id, ...update } = body;
     const { data, error } = await supabaseServer().from('products').update(update).eq('id', id).select('*').single();
-    if (error) return new NextResponse(error.message, { status: 500 });
-    return NextResponse.json(data);
+    if (error) {
+      console.error('[products:update] error', error);
+      return json(500, { error: error.message });
+    }
+    return json(200, data);
   }
-  const payload = { title: body.title, price: Number(body.price), image_url: body.image_url };
+  const { valid, errors, title, price, image_url } = validatePayload(body);
+  if (!valid) {
+    return json(400, { error: 'validation_failed', details: errors });
+  }
+  const payload = { title, price, image_url };
   const { data, error } = await supabaseServer().from('products').insert(payload).select('*').single();
-  if (error) return new NextResponse(error.message, { status: 500 });
-  return NextResponse.json(data);
+  if (error) {
+    console.error('[products:create] error', error, { payload });
+    const message = String(error?.message || 'unknown');
+    if (message.includes("Could not find the table 'public.products'")) {
+      return json(500, { error: 'table_missing', details: ['products table not found — apply migration at db/products.sql'] });
+    }
+    return json(500, { error: message });
+  }
+  return json(201, data);
 }
 
 export async function PUT(req) {

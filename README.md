@@ -82,6 +82,31 @@ NEXT_PUBLIC_SUPABASE_KEY=${SUPABASE_KEY}
 - The codebase accepts multiple env aliases for compatibility.
   - Browser client reads `NEXT_PUBLIC_SUPABASE_ANON_KEY` or `NEXT_PUBLIC_SUPABASE_KEY`.
   - Server reads `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_KEY`, or `SUPABASE_ANON_KEY`.
+  
+## Database Setup
+
+Products, Orders, and SEO features rely on Supabase/Postgres tables.
+
+- Products: create with `db/products.sql`
+  - Open Supabase SQL editor and run the contents of `db/products.sql` to create `public.products`.
+  - Columns: `id`, `title`, `price`, `image_url`, `created_at`.
+
+- Admin Users: create with `db/admin_users.sql`
+  - Use the SQL file to create `public.admin_users` and index on `username`.
+
+Server writes require `SUPABASE_SERVICE_ROLE_KEY` to be set.
+
+### Troubleshooting product creation
+
+- Error: `table_missing` or `Could not find the table 'public.products'`
+  - Action: Ensure `public.products` exists by running `db/products.sql`.
+  - Verify env: `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are set.
+
+- Error: `validation_failed`
+  - Action: Provide a non-empty `title` and `price >= 0`.
+
+- Error: permissions/RLS
+  - Action: Use `SUPABASE_SERVICE_ROLE_KEY` for server writes or configure RLS policies as needed.
 ## Admin Account & Security
 
 This project now uses a database-backed admin account with bcrypt hashing, signed session cookies, and CSRF protection.

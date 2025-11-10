@@ -125,35 +125,39 @@ export default function AdminDashboardClient() {
       // extra fields kept in audit log for now
     };
     const res = await fetch("/api/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    const json = await res.json().catch(() => ({}));
     if (res.ok) {
       notify("Product added", "success");
       try { await logAudit({ action: "product_add", payload }); } catch {}
       setProductForm((f) => ({ ...f, title: "", price: "", imageUrl: "" }));
       fetchProducts();
     } else {
-      notify("Failed to add product", "error");
+      const reason = json?.error || (Array.isArray(json?.details) ? json.details.join(", ") : "Failed to add product");
+      notify(reason, "error");
     }
   }
 
   async function updateProduct(p) {
     const res = await fetch("/api/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ _method: "PUT", id: p.id, title: p.title, price: Number(p.price || 0), image_url: p.image_url || "" }) });
+    const json = await res.json().catch(() => ({}));
     if (res.ok) {
       notify("Product updated", "success");
       try { await logAudit({ action: "product_update", payload: { id: p.id } }); } catch {}
       fetchProducts();
     } else {
-      notify("Update failed", "error");
+      notify(json?.error || "Update failed", "error");
     }
   }
 
   async function deleteProduct(id) {
     const res = await fetch(`/api/products?id=${id}`, { method: "DELETE" });
+    const json = await res.json().catch(() => ({}));
     if (res.ok) {
       notify("Product deleted", "success");
       try { await logAudit({ action: "product_delete", payload: { id } }); } catch {}
       fetchProducts();
     } else {
-      notify("Delete failed", "error");
+      notify(json?.error || "Delete failed", "error");
     }
     setConfirmDelete({ open: false, id: null, title: "" });
   }
@@ -577,4 +581,3 @@ export default function AdminDashboardClient() {
     </div>
   );
 }
-
