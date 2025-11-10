@@ -2,32 +2,22 @@
 import { useEffect, useMemo, useState } from "react";
 import ConfirmDialog from "./ConfirmDialog";
 import ToastContainer, { notify } from "./Toast";
+import CarouselFormSection from "./CarouselFormSection";
+import CarouselSlidesList from "./CarouselSlidesList";
 import { supabaseBrowser } from "../../lib/supabaseClient";
 
 function Toolbar({ children }) {
-  return <div className="toolbar">{children}</div>;
-}
-
-function ThemeToggle({ theme, setTheme }) {
-  return (
-    <button
-      className="btn"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      aria-label="Toggle dark/light mode"
-    >
-      {theme === "dark" ? "Light Mode" : "Dark Mode"}
-    </button>
-  );
+  return <div className="admin-toolbar">{children}</div>;
 }
 
 export default function AdminDashboardClient() {
-  const [theme, setTheme] = useState("dark");
   const [tab, setTab] = useState("products");
 
-  // Shared state: products, orders
+  // Shared state: products, orders, carousel
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState({ products: false, orders: false });
+  const [carouselSlides, setCarouselSlides] = useState([]);
+  const [loading, setLoading] = useState({ products: false, orders: false, carousel: false });
 
   // Product form state
   const [productForm, setProductForm] = useState({
@@ -83,11 +73,25 @@ export default function AdminDashboardClient() {
     }
   }
 
+  async function fetchCarouselSlides() {
+    try {
+      setLoading((l) => ({ ...l, carousel: true }));
+      const res = await fetch("/api/admin/carousel");
+      const data = await res.json();
+      setCarouselSlides(Array.isArray(data) ? data : []);
+    } catch (e) {
+      notify("Failed to load carousel slides", "error");
+    } finally {
+      setLoading((l) => ({ ...l, carousel: false }));
+    }
+  }
+
   // Realtime updates via Supabase if configured
   useEffect(() => {
     fetchProducts();
     fetchOrders();
-    let productChannel, orderChannel;
+    fetchCarouselSlides();
+    let productChannel, orderChannel, carouselChannel;
     try {
       productChannel = supabaseBrowser
         .channel("admin-products")
@@ -97,12 +101,17 @@ export default function AdminDashboardClient() {
         .channel("admin-orders")
         .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => fetchOrders())
         .subscribe();
+      carouselChannel = supabaseBrowser
+        .channel("admin-carousel")
+        .on("postgres_changes", { event: "*", schema: "public", table: "hero_slides" }, () => fetchCarouselSlides())
+        .subscribe();
     } catch {
       // Ignore if realtime not available
     }
     return () => {
       try { supabaseBrowser.removeChannel(productChannel); } catch {}
       try { supabaseBrowser.removeChannel(orderChannel); } catch {}
+      try { supabaseBrowser.removeChannel(carouselChannel); } catch {}
     };
   }, []);
 
@@ -260,35 +269,44 @@ export default function AdminDashboardClient() {
   }
 
   return (
-    <div className={`admin-dashboard admin-theme ${theme}`}>
-      <div className="admin-header">
-        <h1 className="page-title">Admin Dashboard</h1>
-        <div className="admin-actions">
-          <ThemeToggle theme={theme} setTheme={setTheme} />
+    <div className="admin-dashboard-wrapper">
+      {/* Admin Header with Gradient */}
+      <div className="admin-header-gradient">
+        <div className="container">
+          <div className="admin-header-content">
+            <div>
+              <h1 className="admin-title">Admin Dashboard</h1>
+              <p className="admin-subtitle">Manage your store, products, and orders</p>
+            </div>
+            <a href="/" className="btn btn-secondary">← Back to Store</a>
+          </div>
         </div>
       </div>
 
-      <nav className="admin-tabs" role="tablist" aria-label="Admin sections">
-        {[
-          { key: "products", label: "Product Management" },
-          { key: "orders", label: "Order Management" },
-          { key: "homepage", label: "Homepage Customization" }
-        ].map(({ key, label }) => (
-          <button
-            key={key}
-            role="tab"
-            aria-selected={tab === key}
-            className={`tab ${tab === key ? "active" : ""}`}
-            onClick={() => setTab(key)}
-          >
-            {label}
-          </button>
-        ))}
-      </nav>
+      <div className="container admin-dashboard">
+        {/* Navigation Tabs */}
+        <nav className="admin-tabs-nav" role="tablist" aria-label="Admin sections">
+          {[
+            { key: "products", label: "📦 Products", icon: "📦" },
+            { key: "carousel", label: "🎠 Carousel", icon: "🎠" },
+            { key: "orders", label: "📋 Orders", icon: "📋" },
+            { key: "homepage", label: "🏠 Homepage", icon: "🏠" }
+          ].map(({ key, label }) => (
+            <button
+              key={key}
+              role="tab"
+              aria-selected={tab === key}
+              className={`admin-tab ${tab === key ? "active" : ""}`}
+              onClick={() => setTab(key)}
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
 
       {/* Product Management */}
       {tab === "products" && (
-        <section className="panel" role="tabpanel">
+        <section className="admin-panel" role="tabpanel">
           <Toolbar>
             <input
               className="input"
@@ -420,9 +438,28 @@ export default function AdminDashboardClient() {
         </section>
       )}
 
+      {/* Carousel Management */}
+      {tab === "carousel" && (
+        <section className="admin-panel" role="tabpanel">
+          <h2 className="admin-section-title">🎠 Carousel Management</h2>
+          <p className="admin-section-subtitle">Manage hero carousel slides</p>
+
+          <div className="admin-content-grid">
+            <div className="admin-form-card">
+              <h3>Add New Slide</h3>
+              <CarouselFormSection onSuccess={() => fetchCarouselSlides()} />
+            </div>
+            <div className="admin-slides-card">
+              <h3>Existing Slides</h3>
+              <CarouselSlidesList slides={carouselSlides} onUpdate={() => fetchCarouselSlides()} />
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Order Management */}
       {tab === "orders" && (
-        <section className="panel" role="tabpanel">
+        <section className="admin-panel" role="tabpanel">
           <Toolbar>
             <label className="inline">
               <span>Sort</span>
@@ -484,7 +521,7 @@ export default function AdminDashboardClient() {
 
       {/* Homepage Customization */}
       {tab === "homepage" && (
-        <section className="panel" role="tabpanel">
+        <section className="admin-panel" role="tabpanel">
           <Toolbar>
             <button className="btn primary" onClick={saveHomeConfig}>Save Config</button>
           </Toolbar>
@@ -577,7 +614,8 @@ export default function AdminDashboardClient() {
         </section>
       )}
 
-      <ToastContainer />
+        <ToastContainer />
+      </div>
     </div>
   );
 }
