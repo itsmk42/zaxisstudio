@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
+import { Menu, ShoppingCart, User } from 'lucide-react';
 
 const MobileMenu = dynamic(() => import('./MobileMenu'), { ssr: false });
 const AnnouncementBar = dynamic(() => import('./AnnouncementBar'), { ssr: false });
@@ -44,10 +45,7 @@ export default function Navbar() {
             aria-expanded={open ? 'true' : 'false'}
             onClick={() => setOpen((v) => !v)}
           >
-            <span className="sr-only">Menu</span>
-            <svg className="hamburger" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
+            <Menu size={24} aria-hidden="true" />
           </button>
 
           {/* Center: Brand */}
@@ -57,11 +55,7 @@ export default function Navbar() {
           <div className="nav-icons">
             {/* Cart Icon */}
             <Link href="/cart" className="nav-icon-btn" aria-label={`Cart with ${cartCount} items`}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <circle cx="9" cy="21" r="1" />
-                <circle cx="20" cy="21" r="1" />
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-              </svg>
+              <ShoppingCart size={24} aria-hidden="true" />
               {cartCount > 0 && (
                 <span className="cart-badge" aria-label={`${cartCount} items`}>{cartCount}</span>
               )}
@@ -69,10 +63,7 @@ export default function Navbar() {
 
             {/* Account Icon */}
             <Link href="/login" className="nav-icon-btn" aria-label="Login or account">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
+              <User size={24} aria-hidden="true" />
             </Link>
           </div>
 

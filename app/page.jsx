@@ -30,7 +30,7 @@ export default async function HomePage() {
   return (
     <>
       <h1 className="sr-only">Zaxis Studio — Featured 3D Prints</h1>
-      <Hero product={featured} />
+      <Hero product={featured} products={products} />
 
       {/* Products Section */}
       <section className="products-section">
