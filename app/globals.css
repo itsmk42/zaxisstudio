@@ -518,3 +518,141 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
   .navbar-dark .nav-toggle { display: inline-flex; }
 }
 .on-accent { color: var(--text-strong); }
+
+/* Mobile Navigation Icons */
+.nav-icons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.nav-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--nav-dark-border);
+  background: linear-gradient(180deg, var(--nav-dark-surface), #171311);
+  color: var(--nav-dark-text);
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.18s ease, box-shadow 0.22s ease;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 18px rgba(0,0,0,0.28);
+  text-decoration: none;
+}
+
+.nav-icon-btn:hover,
+.nav-icon-btn:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 14px 26px rgba(0,0,0,0.34), 0 0 0 4px var(--nav-dark-glow);
+}
+
+.nav-icon-btn:active {
+  transform: translateY(0);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.22);
+}
+
+/* Cart Badge */
+.cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #dc2626;
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  border: 2px solid var(--nav-dark-bg-bottom);
+  animation: badge-pulse 0.3s ease-out;
+}
+
+@keyframes badge-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Announcement Bar */
+.announcement-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, var(--accent-green), rgba(232, 245, 233, 0.8));
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  position: sticky;
+  top: 60px;
+  z-index: 9;
+  animation: announcement-fade-in 0.3s ease-out;
+}
+
+.announcement-icon {
+  flex-shrink: 0;
+  color: var(--deep-brown);
+  opacity: 0.8;
+}
+
+.announcement-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.announcement-text {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-strong);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: announcement-fade 0.5s ease-in-out;
+}
+
+.announcement-close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.announcement-close:hover,
+.announcement-close:focus-visible {
+  background-color: rgba(0,0,0,0.05);
+  color: var(--text-strong);
+}
+
+@keyframes announcement-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes announcement-fade {
+  0%, 100% { opacity: 1; }
+  45%, 55% { opacity: 0.5; }
+}
+
+/* Responsive: Hide nav icons on desktop */
+@media (min-width: 768px) {
+  .nav-icons { display: none; }
+  .announcement-bar { display: none; }
+}
+
+@media (max-width: 767px) {
+  .nav-icons { display: flex; }
+  .announcement-bar { display: flex; }
+}
