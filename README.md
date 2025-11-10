@@ -52,6 +52,11 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_KEY}
 NEXT_PUBLIC_SUPABASE_KEY=${SUPABASE_KEY}
 ```
 
+### Important
+
+- Do not put real secrets into `.env.example`. Use `.env.local` for actual values; it is already ignored by Git.
+- If you accidentally committed secrets, rotate the affected keys immediately in Supabase.
+
 ## Security Considerations
 
 - Do not commit `.env` files to version control.
@@ -77,4 +82,3 @@ NEXT_PUBLIC_SUPABASE_KEY=${SUPABASE_KEY}
 - The codebase accepts multiple env aliases for compatibility.
   - Browser client reads `NEXT_PUBLIC_SUPABASE_ANON_KEY` or `NEXT_PUBLIC_SUPABASE_KEY`.
   - Server reads `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_KEY`, or `SUPABASE_ANON_KEY`.
-
