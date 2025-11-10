@@ -72,6 +72,59 @@ html, body {
 .mobile-link { display: block; text-decoration: none; color: var(--text-strong); padding: 14px 16px; border-radius: 12px; min-height: 48px; border: 1px solid var(--border); background: var(--accent-blue); transition: transform .25s ease, box-shadow .25s ease; }
 .mobile-link:hover, .mobile-link:focus-visible { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(0,0,0,0.08); }
 
+/* Enhanced Header Navigation Styling */
+.nav {
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.95));
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  transition: box-shadow 0.3s ease;
+}
+.nav:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+.nav-inner {
+  padding: 12px 0;
+}
+.brand {
+  font-size: 18px;
+  letter-spacing: 0.5px;
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+.brand:hover {
+  color: var(--deep-brown);
+  transform: translateY(-1px);
+}
+.nav-links {
+  gap: 8px;
+}
+.nav-link {
+  position: relative;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: all 0.25s ease;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--deep-brown);
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
+}
+.nav-link:hover::after,
+.nav-link:focus-visible::after {
+  width: 60%;
+}
+.nav-link:hover,
+.nav-link:focus-visible {
+  background: rgba(93, 64, 55, 0.08);
+  transform: translateY(-2px);
+}
+
 /* Responsive behavior */
 @media (min-width: 768px) {
   .nav-links { display: inline-flex; }
@@ -213,68 +266,83 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
 .placeholder-line.short { width: 60%; }
 
 /* Hero section */
-.hero { position: relative; margin: 12px 0 28px; }
-.hero-bg { position: absolute; inset: 0; background: transparent; contain: paint; }
-/* Dynamic geometric shapes — subtle and performant */
-.hero-bg::before,
-.hero-bg::after {
-  content: "";
+.hero {
+  position: relative;
+  margin: 12px 0 28px;
+}
+.hero-bg {
   position: absolute;
-  will-change: transform;
-  -webkit-transform: translate3d(0,0,0);
-  transform: translate3d(0,0,0);
-  backface-visibility: hidden;
-  opacity: 0.12; /* subtle */
+  inset: 0;
+  background: linear-gradient(135deg, rgba(227, 242, 253, 0.6), rgba(232, 245, 233, 0.4));
+  contain: paint;
+  overflow: hidden;
+}
+/* Animated grid pattern background */
+.hero-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(0deg, rgba(96, 125, 139, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(96, 125, 139, 0.08) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: 0 0, 0 0;
+  animation: grid-flow 30s linear infinite;
+  will-change: background-position;
   pointer-events: none;
 }
-.hero-bg::before {
-  left: -8%;
-  top: -6%;
-  width: 220px;
-  height: 220px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(96,125,139,0.10), rgba(96,125,139,0));
-  border: 1px solid rgba(203,213,225,0.35);
-  -webkit-animation: geom-sway 22s linear infinite;
-  animation: geom-sway 22s linear infinite;
+@keyframes grid-flow {
+  0% {
+    background-position: 0 0, 0 0;
+  }
+  100% {
+    background-position: 40px 40px, 40px 40px;
+  }
 }
-.hero-bg::after {
-  right: -6%;
-  bottom: -8%;
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, rgba(232,245,233,0.20), rgba(232,245,233,0));
-  border: 1px solid rgba(203,213,225,0.30);
-  -webkit-animation: geom-orbit 18s linear infinite;
-  animation: geom-orbit 18s linear infinite;
+@-webkit-keyframes grid-flow {
+  0% {
+    background-position: 0 0, 0 0;
+  }
+  100% {
+    background-position: 40px 40px, 40px 40px;
+  }
 }
-@-webkit-keyframes geom-sway {
-  0%   { -webkit-transform: translate3d(-10%, -10%, 0) rotate(0deg); }
-  50%  { -webkit-transform: translate3d(10%, 5%, 0) rotate(180deg); }
-  100% { -webkit-transform: translate3d(-10%, -10%, 0) rotate(360deg); }
-}
-@keyframes geom-sway {
-  0%   { transform: translate3d(-10%, -10%, 0) rotate(0deg); }
-  50%  { transform: translate3d(10%, 5%, 0) rotate(180deg); }
-  100% { transform: translate3d(-10%, -10%, 0) rotate(360deg); }
-}
-@-webkit-keyframes geom-orbit {
-  0%   { -webkit-transform: translate3d(0%, 0%, 0) rotate(0deg) scale(1); }
-  50%  { -webkit-transform: translate3d(-6%, 8%, 0) rotate(180deg) scale(1.02); }
-  100% { -webkit-transform: translate3d(0%, 0%, 0) rotate(360deg) scale(1); }
-}
-@keyframes geom-orbit {
-  0%   { transform: translate3d(0%, 0%, 0) rotate(0deg) scale(1); }
-  50%  { transform: translate3d(-6%, 8%, 0) rotate(180deg) scale(1.02); }
-  100% { transform: translate3d(0%, 0%, 0) rotate(360deg) scale(1); }
-}
+/* Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
-  .hero-bg::before, .hero-bg::after { -webkit-animation: none; animation: none; }
+  .hero-bg::before {
+    animation: none;
+    background-position: 0 0, 0 0;
+  }
 }
-.hero-content { position: relative; z-index: 1; display: grid; place-items: center; padding: 24px; }
-.hero-card { display: flex; flex-direction: column; gap: 20px; align-items: flex-start; border: 1px solid var(--border); border-radius: 16px; background: rgba(255,255,255,0.90); backdrop-filter: blur(4px); box-shadow: 0 20px 40px rgba(96,125,139,0.06); transition: transform .3s ease, box-shadow .3s ease; }
-.hero-card:hover { transform: translateY(-4px); box-shadow: 0 28px 60px rgba(0,0,0,0.12); }
+/* Geometric shapes removed - replaced with animated grid pattern */
+.hero-content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.hero-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+  border: 1px solid rgba(203, 213, 225, 0.5);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.88));
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 20px 40px rgba(96,125,139,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.8);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform;
+}
+.hero-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 28px 60px rgba(0,0,0,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.8);
+}
 .hero-media img { width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--border); }
 .hero-info { padding: 12px 16px; margin-top: 16px; font-size: 0.875rem; }
 .hero-title { margin: 0 0 8px; font-size: 24px; }
