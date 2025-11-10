@@ -1,5 +1,6 @@
 "use client";
 import Link from 'next/link';
+import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
 import { Menu, ShoppingCart, User } from 'lucide-react';
@@ -48,8 +49,16 @@ export default function Navbar() {
             <Menu size={20} aria-hidden="true" />
           </button>
 
-          {/* Center: Brand */}
-          <Link className="brand" href="/">Zaxis Studio</Link>
+          {/* Center: Brand Logo */}
+          <Link className="brand brand-logo" href="/" aria-label="Zaxis Studio Home">
+            <Image
+              src="/axis-logo.svg"
+              alt="Zaxis Studio Logo"
+              width={120}
+              height={50}
+              priority
+            />
+          </Link>
 
           {/* Right: Cart & Account Icons */}
           <div className="nav-icons">

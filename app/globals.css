@@ -1,50 +1,50 @@
-/* Wellness Palette Theme Variables */
+/* Modern Teal & Blue Theme Variables */
 :root {
   /* Primary backgrounds */
   --cool-gray: #F5F7FA; /* site background */
-  --soft-green: #E8F5E9; /* accent backgrounds */
+  --soft-teal: #E0F7F6; /* accent backgrounds */
   --pale-blue: #E3F2FD; /* accent backgrounds */
-  --light-pink: #FCE4EC; /* accent backgrounds */
+  --light-cyan: #E0F7FA; /* accent backgrounds */
 
   /* Contrast and key UI */
-  --deep-brown: #5D4037; /* nav, CTA, headings */
+  --deep-teal: #0F6B7F; /* nav, CTA, headings - replaced brown */
   --blue-gray: #607D8B;  /* primary text, icons, secondary CTA */
 
   /* Derived tokens */
   --bg-primary: var(--cool-gray);
   --text-primary: var(--blue-gray);
-  --text-strong: var(--deep-brown);
-  --accent-green: var(--soft-green);
+  --text-strong: var(--deep-teal);
+  --accent-green: var(--soft-teal);
   --accent-blue: var(--pale-blue);
-  --accent-pink: var(--light-pink);
+  --accent-pink: var(--light-cyan);
 
   /* System tokens (backwards compatibility) */
   --bg: var(--bg-primary);
   --text: var(--text-primary);
   --muted: #7C8F9A; /* slightly lighter than blue-gray for secondary text */
-  --primary: var(--deep-brown);
+  --primary: var(--deep-teal);
   --border: #CBD5E1; /* soft slate border for matte feel */
   --hover-overlay: rgba(96, 125, 139, 0.10); /* blue-gray 10% */
 
   /* Legacy names mapped for compatibility */
-  --color-charcoal: var(--deep-brown);
+  --color-charcoal: var(--deep-teal);
   --color-gray: var(--border);
   --color-ivory: var(--cool-gray);
 
-  /* Dark Navbar Theme Tokens */
-  --nav-dark-bg-top: #2E241F; /* warm deep brown, top gradient */
-  --nav-dark-bg-bottom: #1A1614; /* near-black brown, bottom gradient */
-  --nav-dark-surface: #201A17; /* pill background */
-  --nav-dark-border: #3A2A24; /* warm border */
-  --nav-dark-highlight: #6D4C41; /* gentle copper highlight for 3D edge */
+  /* Dark Navbar Theme Tokens - Updated to teal/blue */
+  --nav-dark-bg-top: #0F2027; /* dark blue, top gradient */
+  --nav-dark-bg-bottom: #2C5364; /* teal-blue, bottom gradient */
+  --nav-dark-surface: #1A3A47; /* teal surface */
+  --nav-dark-border: #2C5364; /* teal border */
+  --nav-dark-highlight: #00D9FF; /* cyan highlight */
   --nav-dark-text: #F3F4F6; /* very light for high contrast */
   --nav-dark-muted: #C7C9CC; /* muted text/icons */
   --nav-dark-shadow: rgba(0,0,0,0.35); /* drop shadow */
-  --nav-dark-glow: rgba(253, 216, 175, 0.12); /* subtle warm glow */
+  --nav-dark-glow: rgba(0, 217, 255, 0.12); /* subtle cyan glow */
 
   /* Gradient Variables */
   --gradient-page-bg: linear-gradient(to bottom, #FFFFFF, #F7F9FF);
-  --gradient-hero: linear-gradient(to bottom right, #00B09B, #96C93D);
+  --gradient-hero: linear-gradient(to right, #0F2027, #2C5364);
   --gradient-card: linear-gradient(to bottom, #FFFFFF, #F9FAFB);
   --gradient-cta: linear-gradient(to right, #00B4DB, #0083B0);
   --gradient-footer: linear-gradient(to right, #0F2027, #2C5364);
@@ -70,7 +70,9 @@ p { font-size: 14px; font-weight: 400; line-height: 1.6; margin: 0 0 12px; }
 
 .nav { border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 10; }
 .nav-inner { display: flex; align-items: center; justify-content: space-between; }
-.brand { font-weight: 700; text-decoration: none; color: var(--text-strong); letter-spacing: 0.02em; }
+.brand { font-weight: 700; text-decoration: none; color: var(--text-strong); letter-spacing: 0.02em; display: flex; align-items: center; justify-content: center; }
+.brand-logo { width: 120px; height: 50px; }
+.brand-logo img { width: 100%; height: 100%; object-fit: contain; }
 .nav-links { display: none; gap: 24px; }
 .nav-link { text-decoration: none; color: var(--text-strong); padding: 12px 12px; display: inline-flex; align-items: center; min-height: 48px; border-radius: 10px; transition: color .25s ease, background-color .25s ease, transform .25s ease; font-weight: 600; letter-spacing: 0.025em; }
 .nav-link:hover, .nav-link:focus-visible { box-shadow: inset 0 0 0 9999px var(--hover-overlay); transform: translateY(-1px); }
@@ -167,20 +169,21 @@ p { font-size: 14px; font-weight: 400; line-height: 1.6; margin: 0 0 12px; }
 @media (max-width: 600px) { .grid.two { grid-template-columns: repeat(2, 1fr); } .grid.three { grid-template-columns: 1fr; } }
 .card { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--gradient-card); display: flex; flex-direction: column; }
 .card-media img { width: 100%; height: auto; display: block; }
-.card-body { padding: 12px; }
+.card-body { padding: 12px; display: flex; flex-direction: column; }
 .card-title { margin: 0 0 8px; font-size: clamp(15px, 1.87vw, 18px); font-weight: 400; }
 .card-body p { font-size: 14px; line-height: 1.6; }
 .card-desc { font-size: 14px; line-height: 1.6; }
-.price { color: var(--text-strong); font-weight: 700; font-size: 16px; }
+.price { color: var(--text-strong); font-weight: 700; font-size: 16px; margin-bottom: 12px; }
+.card-actions { display: flex; gap: 8px; margin-top: auto; }
 .btn {
   appearance: none;
   border: 1px solid var(--border);
-  background: var(--deep-brown);
+  background: var(--deep-teal);
   color: #fff;
-  padding: 12px 16px;
-  border-radius: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
   cursor: pointer;
-  min-height: 48px;
+  min-height: 44px;
   font-weight: 600;
   letter-spacing: 0.025em;
   line-height: 1.1;
@@ -188,17 +191,20 @@ p { font-size: 14px; font-weight: 400; line-height: 1.6; margin: 0 0 12px; }
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 13px;
+  flex: 1;
+  transition: all 0.2s ease;
 }
-.btn.primary { background: var(--deep-brown); color: #fff; border-color: var(--border); box-shadow: none; }
+.btn.primary { background: var(--deep-teal); color: #fff; border-color: var(--border); box-shadow: none; }
 .btn.buy-now {
   background: var(--gradient-cta);
   color: #fff;
-  border: 2px solid var(--border);
-  padding: 12px 24px;
+  border: 1px solid var(--border);
+  padding: 10px 14px;
   text-decoration: none;
+  flex: 1;
 }
-.btn.add-to-cart { background: var(--gradient-footer); color: #fff; border-color: var(--border); }
+.btn.add-to-cart { background: var(--gradient-footer); color: #fff; border-color: var(--border); flex: 1; }
 .btn:hover, .btn:focus-visible { box-shadow: inset 0 0 0 9999px var(--hover-overlay); }
 .btn[aria-disabled="true"], .btn:disabled { opacity: 0.7; cursor: not-allowed; }
 .products-section { margin-top: 20px; }
@@ -292,7 +298,7 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
 .hero-bg {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.95));
+  background: var(--gradient-hero);
   contain: paint;
   overflow: hidden;
   z-index: 0;
@@ -303,8 +309,8 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(0deg, rgba(96, 125, 139, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(96, 125, 139, 0.08) 1px, transparent 1px);
+    linear-gradient(0deg, rgba(0, 217, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 217, 255, 0.08) 1px, transparent 1px);
   background-size: 40px 40px;
   background-position: 0 0, 0 0;
   animation: grid-flow 30s linear infinite;
@@ -362,25 +368,26 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
   }
 }
 .hero-card {
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   overflow: hidden;
-  background: var(--gradient-card);
+  background: rgba(255, 255, 255, 0.95);
   display: flex;
   flex-direction: column;
+  transition: all 0.2s ease;
 }
 .hero-card:hover {
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+  transform: translateY(-4px);
 }
 .hero-card:focus-within {
-  outline: 2px solid var(--accent-blue);
+  outline: 2px solid #00D9FF;
   outline-offset: 2px;
 }
 .hero-media img { width: 100%; height: auto; display: block; }
-.hero-info { padding: 12px; }
-.hero-title { margin: 0 0 8px; font-size: clamp(15px, 1.87vw, 18px); font-weight: 400; }
-.hero-price { color: var(--text-strong); font-weight: 700; font-size: 16px; margin: 0 0 12px; }
+.hero-info { padding: 12px; display: flex; flex-direction: column; }
+.hero-title { margin: 0 0 8px; font-size: clamp(15px, 1.87vw, 18px); font-weight: 400; color: #1a1a1a; }
+.hero-price { color: var(--deep-teal); font-weight: 700; font-size: 16px; margin: 0 0 12px; }
 
 /* Hero animations removed - no longer needed for static cards */
 

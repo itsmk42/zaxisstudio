@@ -1,0 +1,36 @@
+<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Define gradients -->
+  <defs>
+    <linearGradient id="metalGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E8E8E8;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#A0A0A0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#707070;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="cyanGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00D9FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00B8D4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Left "AXIS" text -->
+  <text x="80" y="120" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#2C3E50" letter-spacing="8">AXIS</text>
+  
+  <!-- Center 3D Z logo -->
+  <g transform="translate(360, 100)">
+    <!-- Z shape with 3D effect -->
+    <polygon points="0,0 80,0 0,80 80,80" fill="url(#metalGradient)" stroke="#505050" stroke-width="2"/>
+    <polygon points="20,20 60,20 20,60 60,60" fill="#D0D0D0" stroke="#505050" stroke-width="1"/>
+    
+    <!-- Cyan accent lines -->
+    <line x1="-40" y1="-30" x2="40" y2="30" stroke="url(#cyanGradient)" stroke-width="6" stroke-linecap="round"/>
+    <line x1="40" y1="-30" x2="-40" y2="30" stroke="url(#cyanGradient)" stroke-width="6" stroke-linecap="round"/>
+    <line x1="0" y1="-50" x2="0" y2="110" stroke="url(#cyanGradient)" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Right "STUDIO" text -->
+  <text x="520" y="120" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#2C3E50" letter-spacing="8">STUDIO</text>
+  
+  <!-- Bottom "MODERN DESIGNS" text -->
+  <text x="360" y="220" font-family="Arial, sans-serif" font-size="28" font-weight="300" fill="#2C3E50" text-anchor="middle" letter-spacing="4">MODERN DESIGNS</text>
+</svg>
+

@@ -1,5 +1,6 @@
 "use client";
 import Image from 'next/image';
+import AddToCartButton from './AddToCartButton';
 
 export default function Hero({ products = [] }) {
   // Display first 3 products as static cards
@@ -20,13 +21,16 @@ export default function Hero({ products = [] }) {
         <div className="hero-info">
           <h2 className="hero-title">{product.title}</h2>
           <p className="hero-price">₹{product.price}</p>
-          <a
-            className="btn primary"
-            href={`/product/${product.id}`}
-            aria-label={`Shop ${product.title} now`}
-          >
-            Shop Now
-          </a>
+          <div className="card-actions">
+            <AddToCartButton product={product} />
+            <a
+              className="btn buy-now"
+              href={`/checkout?buy=${product.id}`}
+              aria-label={`Buy ${product.title} now`}
+            >
+              Buy Now
+            </a>
+          </div>
         </div>
       </article>
     );
