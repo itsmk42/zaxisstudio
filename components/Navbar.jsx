@@ -45,7 +45,7 @@ export default function Navbar() {
             aria-expanded={open ? 'true' : 'false'}
             onClick={() => setOpen((v) => !v)}
           >
-            <Menu size={24} aria-hidden="true" />
+            <Menu size={20} aria-hidden="true" />
           </button>
 
           {/* Center: Brand */}
@@ -55,7 +55,7 @@ export default function Navbar() {
           <div className="nav-icons">
             {/* Cart Icon */}
             <Link href="/cart" className="nav-icon-btn" aria-label={`Cart with ${cartCount} items`}>
-              <ShoppingCart size={24} aria-hidden="true" />
+              <ShoppingCart size={20} aria-hidden="true" />
               {cartCount > 0 && (
                 <span className="cart-badge" aria-label={`${cartCount} items`}>{cartCount}</span>
               )}
@@ -63,7 +63,7 @@ export default function Navbar() {
 
             {/* Account Icon */}
             <Link href="/login" className="nav-icon-btn" aria-label="Login or account">
-              <User size={24} aria-hidden="true" />
+              <User size={20} aria-hidden="true" />
             </Link>
           </div>
 

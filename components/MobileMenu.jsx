@@ -12,7 +12,7 @@ export default function MobileMenu({ open, onClose }) {
       <div className="mobile-menu-header">
         <span className="mobile-brand">Menu</span>
         <button className="mobile-close" aria-label="Close menu" onClick={onClose}>
-          <X size={20} aria-hidden="true" />
+          <X size={18} aria-hidden="true" />
         </button>
       </div>
       <div className="mobile-menu-inner">
