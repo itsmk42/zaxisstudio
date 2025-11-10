@@ -16,7 +16,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="nav" role="navigation" aria-label="Primary">
+    <nav className="nav navbar-dark" role="navigation" aria-label="Primary">
       <div className="container nav-inner">
         <Link className="brand" href="/">Zaxis Studio</Link>
 
@@ -26,6 +26,7 @@ export default function Navbar() {
           <Link className="nav-link" href="/products">Products</Link>
           <Link className="nav-link" href="/custom">Custom Orders</Link>
           <Link className="nav-link" href="/cart">Cart</Link>
+          <Link className="nav-link" href="/login" aria-label="Login">Login</Link>
         </div>
 
         {/* Mobile toggle */}
@@ -46,4 +47,3 @@ export default function Navbar() {
     </nav>
   );
 }
-

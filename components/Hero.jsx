@@ -20,7 +20,7 @@ export default function Hero({ product }) {
                 <h2 className="hero-title">{product.title}</h2>
                 <p className="price">₹{product.price}</p>
                 <div className="actions">
-                  <a className="btn" href={`/product/${product.id}`} aria-label={`View ${product.title}`}>View</a>
+                  <a className="btn accent-blue" href={`/product/${product.id}`} aria-label={`View ${product.title}`}>View</a>
                   <a className="btn buy-now" href={`/checkout?buy=${product.id}`} aria-label={`Buy ${product.title} now`}>Buy Now</a>
                 </div>
               </div>

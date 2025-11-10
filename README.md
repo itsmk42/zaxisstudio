@@ -82,3 +82,38 @@ NEXT_PUBLIC_SUPABASE_KEY=${SUPABASE_KEY}
 - The codebase accepts multiple env aliases for compatibility.
   - Browser client reads `NEXT_PUBLIC_SUPABASE_ANON_KEY` or `NEXT_PUBLIC_SUPABASE_KEY`.
   - Server reads `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_KEY`, or `SUPABASE_ANON_KEY`.
+## Admin Account & Security
+
+This project now uses a database-backed admin account with bcrypt hashing, signed session cookies, and CSRF protection.
+
+### Setup
+
+1. Run the SQL below in Supabase (SQL Editor):
+
+```
+-- db/admin_users.sql
+create table if not exists public.admin_users (
+  id bigserial primary key,
+  username text unique not null,
+  password_hash text not null,
+  role text not null default 'admin',
+  created_at timestamptz not null default now()
+);
+create index if not exists admin_users_username_idx on public.admin_users (username);
+```
+
+2. Seed the admin user (using local dev server):
+
+```
+curl -X POST http://localhost:3000/api/admin/users \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"m42k@admin","password":"Ss@1234q","role":"admin"}'
+```
+
+3. Access the admin login at `/admin/login`. The form uses CSRF tokens and sets an `admin_session` cookie with `httpOnly`, `sameSite=Strict`, and `secure` (in production).
+
+### Notes
+
+- Ensure `ADMIN_SESSION_SECRET` is set in `.env.local` and deploy on HTTPS so cookies are marked `secure`.
+- Middleware verifies the signed session and restricts `/admin/*` routes to `role=admin` users.
+- The legacy `ADMIN_PASSWORD` cookie check is removed.

@@ -34,6 +34,13 @@ export default async function HomePage() {
       <section>
         <ProductsGrid products={products} title="Featured" />
       </section>
+      <section aria-label="Shop All Products">
+        <div className="container" style={{ display: 'grid', justifyItems: 'center', marginTop: 12 }}>
+          <a className="shop-all" href="/products" aria-label="Shop all products">
+            Shop All Products <span aria-hidden="true" className="arrow">→</span>
+          </a>
+        </div>
+      </section>
     </>
   );
 }

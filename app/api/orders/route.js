@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 import { supabaseServer } from '../../../lib/supabaseServer';
 
+export async function GET() {
+  const { data, error } = await supabaseServer().from('orders').select('*').order('id', { ascending: false });
+  if (error) return new NextResponse(error.message, { status: 500 });
+  return NextResponse.json(data || []);
+}
+
 export async function POST(req) {
   const contentType = req.headers.get('content-type') || '';
   let body = {};

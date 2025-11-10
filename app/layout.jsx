@@ -25,11 +25,16 @@ export default function RootLayout({ children }) {
       <body className={`${inter.className} site-grid-bg`}>
         <Navbar />
         <main className="container">{children}</main>
-        <footer className="footer">
+        <footer className="footer navbar-dark" role="contentinfo">
           <div className="container footer-inner">
-            <a className="shop-all" href="/products" aria-label="Shop all products">
-              Shop All Products <span aria-hidden="true" className="arrow">→</span>
-            </a>
+            <div className="tnc" aria-label="Terms & Conditions">
+              <h2 className="tnc-title">Terms & Conditions</h2>
+              <p className="tnc-text">
+                By using this site and purchasing, you agree to our policies on shipping,
+                returns, warranties, and privacy. Custom-manufactured items may vary slightly.
+                For assistance, please contact support.
+              </p>
+            </div>
             <span className="footer-copy">© {new Date().getFullYear()} Zaxis Studio</span>
           </div>
         </footer>
