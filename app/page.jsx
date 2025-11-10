@@ -7,7 +7,6 @@ export const revalidate = 60;
 
 export default async function HomePage() {
   const products = await getFeaturedProducts();
-  const featured = products?.[0] || null;
 
   // Featured items data
   const featuredItems = [
@@ -30,7 +29,7 @@ export default async function HomePage() {
   return (
     <>
       <h1 className="sr-only">Zaxis Studio — Featured 3D Prints</h1>
-      <Hero product={featured} products={products} />
+      <Hero products={products} />
 
       {/* Products Section */}
       <section className="products-section">
