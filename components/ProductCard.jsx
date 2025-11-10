@@ -9,7 +9,7 @@ export default function ProductCard({ product }) {
   return (
     <div className="card">
       <a href={`/product/${product.id}`} className="card-media">
-        <Image src={src} alt={alt} width={400} height={300} />
+        <Image src={src} alt={alt} width={400} height={300} priority={false} />
       </a>
       <div className="card-body">
         <h3 className="card-title">{product.title}</h3>

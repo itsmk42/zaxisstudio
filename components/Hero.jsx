@@ -124,20 +124,7 @@ export default function Hero({ slides = [] }) {
             <ChevronRight size={32} />
           </button>
 
-          {/* Pagination dots */}
-          <div className="carousel-dots" role="tablist" aria-label="Slide navigation">
-            {heroSlides.map((_, index) => (
-              <button
-                key={index}
-                className={`carousel-dot ${index === currentSlide ? 'active' : ''}`}
-                onClick={() => goToSlide(index)}
-                role="tab"
-                aria-selected={index === currentSlide}
-                aria-label={`Go to slide ${index + 1}`}
-                title={`Slide ${index + 1}`}
-              />
-            ))}
-          </div>
+
         </div>
       </div>
     </section>

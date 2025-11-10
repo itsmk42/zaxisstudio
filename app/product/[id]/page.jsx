@@ -1,30 +1,51 @@
-import Image from 'next/image';
-import { getProductById } from '../../../lib/products';
-import AddToCartButton from '../../../components/AddToCartButton';
+import { getProductById, listProducts } from '../../../lib/products';
+import ProductDetailClient from '../../../components/ProductDetailClient';
 
 export const revalidate = 60;
+
+export async function generateMetadata({ params }) {
+  const product = await getProductById(params.id);
+  if (!product) {
+    return {
+      title: 'Product Not Found',
+      description: 'The product you are looking for does not exist.',
+    };
+  }
+  return {
+    title: `${product.title} | Zaxis Studio`,
+    description: product.description || `Buy ${product.title} from Zaxis Studio. Price: ₹${product.price}`,
+    openGraph: {
+      title: product.title,
+      description: product.description || `Buy ${product.title}`,
+      images: [product.image_url || '/placeholder.svg'],
+    },
+  };
+}
 
 export default async function ProductDetail({ params }) {
   const product = await getProductById(params.id);
   if (!product) {
-    return <div>Product not found.</div>;
+    return (
+      <div className="container" style={{ textAlign: 'center', padding: '60px 16px' }}>
+        <h1>Product Not Found</h1>
+        <p>The product you are looking for does not exist.</p>
+        <a href="/products" className="btn primary" style={{ marginTop: '20px', display: 'inline-block' }}>
+          Back to Products
+        </a>
+      </div>
+    );
   }
-  const isStock = !product.image_url || /picsum\.photos/i.test(product.image_url);
-  const src = isStock ? '/placeholder.svg' : product.image_url;
-  const alt = isStock ? `Image Coming Soon — ${product.title}` : product.title;
+
+  // Get related products (exclude current product)
+  const allProducts = await listProducts();
+  const relatedProducts = allProducts
+    .filter((p) => String(p.id) !== String(params.id))
+    .slice(0, 6);
+
   return (
-    <section className="product-detail">
-      <div className="product-media">
-        <Image src={src} alt={alt} width={640} height={480} className="product-image" />
-      </div>
-      <div className="product-info">
-        <h1>{product.title}</h1>
-        <p className="price">₹{product.price}</p>
-        <div className="actions">
-          <AddToCartButton product={product} />
-          <a className="btn buy-now" href={`/checkout?buy=${product.id}`} aria-label={`Buy ${product.title} now`}>Buy Now</a>
-        </div>
-      </div>
-    </section>
+    <ProductDetailClient
+      product={product}
+      relatedProducts={relatedProducts}
+    />
   );
 }
