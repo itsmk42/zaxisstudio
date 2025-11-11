@@ -75,11 +75,31 @@ export async function POST(req) {
   }
   if (body._method === 'PUT' || body._method === 'PATCH') {
     const { id, _method, ...update } = body;
-    const { data, error } = await supabaseServer().from('products').update(update).eq('id', id).select('*').single();
+
+    // Validate that id exists
+    if (!id) {
+      return json(400, { error: 'id is required for update' });
+    }
+
+    // Coerce id to number if it's a string representation of a number
+    const productId = typeof id === 'string' ? parseInt(id, 10) : id;
+    if (isNaN(productId)) {
+      return json(400, { error: 'id must be a valid number' });
+    }
+
+    console.log('[products:update] updating product', { productId, updateFields: Object.keys(update) });
+
+    const { data, error } = await supabaseServer().from('products').update(update).eq('id', productId).select('*').maybeSingle();
     if (error) {
       console.error('[products:update] error', error);
       return json(500, { error: error.message });
     }
+
+    if (!data) {
+      console.warn('[products:update] no product found with id', productId);
+      return json(404, { error: 'Product not found' });
+    }
+
     // Revalidate cached pages when product is updated
     try {
       revalidatePath('/');
