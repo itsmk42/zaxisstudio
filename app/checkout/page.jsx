@@ -1,12 +1,12 @@
-import CheckoutClient from '../../components/CheckoutClient';
+import CheckoutClientNew from '../../components/CheckoutClientNew';
 
-export const metadata = { title: 'Checkout — Zaxis Studio' };
+export const metadata = { title: 'Secure Checkout — Zaxis Studio' };
 
 export default function CheckoutPage() {
   return (
     <section>
-      <h1 className="page-title">Checkout (Cash on Delivery)</h1>
-      <CheckoutClient />
+      <h1 className="page-title">Secure Checkout</h1>
+      <CheckoutClientNew />
     </section>
   );
 }
