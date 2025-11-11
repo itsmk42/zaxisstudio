@@ -10,9 +10,26 @@ function validatePayload(body) {
   const errors = [];
   const title = typeof body.title === 'string' ? body.title.trim() : '';
   const price = Number(body.price);
+  const image_url = typeof body.image_url === 'string' ? body.image_url.trim() : '';
+
   if (!title) errors.push('title is required');
   if (!Number.isFinite(price) || price < 0) errors.push('price must be a non-negative number');
-  return { valid: errors.length === 0, errors, title, price, image_url: body.image_url || '' };
+  if (!image_url) errors.push('image_url is required');
+
+  return {
+    valid: errors.length === 0,
+    errors,
+    title,
+    price,
+    image_url,
+    description: body.description || '',
+    sku: body.sku || '',
+    inventory: Number(body.inventory) || 0,
+    category: body.category || '',
+    tags: body.tags || '',
+    seo_title: body.seo_title || '',
+    seo_description: body.seo_description || '',
+  };
 }
 
 export async function GET() {
@@ -73,11 +90,24 @@ export async function POST(req) {
     }
     return json(200, data);
   }
-  const { valid, errors, title, price, image_url } = validatePayload(body);
+  const { valid, errors, title, price, image_url, description, sku, inventory, category, tags, seo_title, seo_description } = validatePayload(body);
   if (!valid) {
     return json(400, { error: 'validation_failed', details: errors });
   }
-  const payload = { title, price, image_url };
+
+  const payload = {
+    title,
+    price,
+    image_url,
+    description,
+    sku,
+    inventory,
+    category,
+    tags,
+    seo_title,
+    seo_description,
+  };
+
   const { data, error } = await supabaseServer().from('products').insert(payload).select('*').single();
   if (error) {
     console.error('[products:create] error', error, { payload });

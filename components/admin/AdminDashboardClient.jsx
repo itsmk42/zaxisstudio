@@ -143,19 +143,52 @@ export default function AdminDashboardClient() {
       notify("Please provide a valid title and price", "error");
       return;
     }
-    // Persist primary image_url; multiple files need storage integration
+
+    // Validate that either imageUrl is provided or image was uploaded
+    if (!productForm.imageUrl) {
+      notify("Please provide an image URL or upload an image", "error");
+      return;
+    }
+
+    // Build payload with all product information
     const payload = {
       title: productForm.title,
       price,
-      image_url: productForm.imageUrl || "",
-      // extra fields kept in audit log for now
+      image_url: productForm.imageUrl,
+      description: productForm.description || "",
+      sku: productForm.sku || "",
+      inventory: productForm.inventory ? Number(productForm.inventory) : 0,
+      category: productForm.categories || "",
+      tags: productForm.tags || "",
+      seo_title: productForm.seoTitle || "",
+      seo_description: productForm.seoDescription || "",
     };
-    const res = await fetch("/api/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+
+    const res = await fetch("/api/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
     const json = await res.json().catch(() => ({}));
     if (res.ok) {
-      notify("Product added", "success");
+      notify("Product added successfully!", "success");
       try { await logAudit({ action: "product_add", payload }); } catch {}
-      setProductForm((f) => ({ ...f, title: "", price: "", imageUrl: "" }));
+      // Reset form
+      setProductForm((f) => ({
+        ...f,
+        title: "",
+        price: "",
+        imageUrl: "",
+        description: "",
+        sku: "",
+        inventory: "",
+        categories: "",
+        tags: "",
+        seoTitle: "",
+        seoDescription: "",
+        imageFiles: []
+      }));
       fetchProducts();
     } else {
       const reason = json?.error || (Array.isArray(json?.details) ? json.details.join(", ") : "Failed to add product");

@@ -1995,6 +1995,36 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
   object-fit: cover;
 }
 
+/* Upload Status Indicators */
+.uploading-indicator {
+  font-size: 12px;
+  color: #f59e0b;
+  font-weight: 500;
+  margin-left: 8px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.upload-success {
+  font-size: 13px;
+  color: #10b981;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 6px;
+  border-left: 3px solid #10b981;
+}
+
+.form-group input:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 /* Carousel Slides Grid */
 .carousel-slides-grid {
   display: grid;

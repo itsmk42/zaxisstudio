@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import { notify } from './Toast';
 
-export default function ProductFormSection({ 
-  productForm, 
-  setProductForm, 
+export default function ProductFormSection({
+  productForm,
+  setProductForm,
   onSubmit,
   categories = [],
   onCategoriesUpdate
@@ -14,25 +14,59 @@ export default function ProductFormSection({
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [newCategory, setNewCategory] = useState('');
   const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files?.[0];
     if (file) {
       // Validate aspect ratio (1:1)
       const reader = new FileReader();
       reader.onload = (event) => {
         const img = new Image();
-        img.onload = () => {
+        img.onload = async () => {
           const aspectRatio = img.width / img.height;
           if (Math.abs(aspectRatio - 1) > 0.05) {
             notify('Product image should be square (1:1 aspect ratio)', 'error');
             return;
           }
           setImagePreview(event.target.result);
+
+          // Upload file to Supabase Storage
+          await uploadImageToStorage(file);
         };
         img.src = event.target.result;
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadImageToStorage = async (file) => {
+    try {
+      setIsUploadingImage(true);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', 'products');
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        notify(data.error || 'Failed to upload image', 'error');
+        return;
+      }
+
+      // Set the image URL from the uploaded file
+      setProductForm({ ...productForm, imageUrl: data.url });
+      notify('Image uploaded successfully!', 'success');
+    } catch (error) {
+      console.error('Upload error:', error);
+      notify('Failed to upload image: ' + error.message, 'error');
+    } finally {
+      setIsUploadingImage(false);
     }
   };
 
@@ -142,17 +176,20 @@ export default function ProductFormSection({
         </div>
 
         <div className="form-group">
-          <label htmlFor="product-upload">Upload Images (1:1 aspect ratio)</label>
+          <label htmlFor="product-upload">
+            Upload Images (1:1 aspect ratio)
+            {isUploadingImage && <span className="uploading-indicator"> (Uploading...)</span>}
+          </label>
           <input
             id="product-upload"
             type="file"
-            multiple
             accept="image/*"
-            onChange={(e) => {
-              handleImageChange(e);
-              setProductForm({ ...productForm, imageFiles: Array.from(e.target.files || []) });
-            }}
+            onChange={handleImageChange}
+            disabled={isUploadingImage}
           />
+          {productForm.imageUrl && (
+            <p className="upload-success">✓ Image uploaded: {productForm.imageUrl.split('/').pop()}</p>
+          )}
         </div>
 
         {imagePreview && (
