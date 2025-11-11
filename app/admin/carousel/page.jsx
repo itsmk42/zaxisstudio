@@ -29,7 +29,7 @@ export default async function AdminCarousel() {
                 <div className="carousel-item-info">
                   <strong>{slide.title}</strong>
                   <p>{slide.price}</p>
-                  <small>Order: {slide.order}</small>
+                  <small>Order: {slide.display_order}</small>
                 </div>
               </div>
               <form action={`/api/admin/carousel?id=${slide.id}`} method="POST">
