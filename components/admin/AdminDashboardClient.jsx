@@ -5,6 +5,7 @@ import ToastContainer, { notify } from "./Toast";
 import CarouselFormSection from "./CarouselFormSection";
 import CarouselSlidesList from "./CarouselSlidesList";
 import ProductFormSection from "./ProductFormSection";
+import OrderManagementSection from "./OrderManagementSection";
 import { supabaseBrowser } from "../../lib/supabaseClient";
 
 function Toolbar({ children }) {
@@ -433,62 +434,15 @@ export default function AdminDashboardClient() {
       {/* Order Management */}
       {tab === "orders" && (
         <section className="admin-panel" role="tabpanel">
-          <Toolbar>
-            <label className="inline">
-              <span>Sort</span>
-              <select value={`${orderSort.key}:${orderSort.dir}`} onChange={(e) => { const [key, dir] = e.target.value.split(":"); setOrderSort({ key, dir }); }}>
-                <option value="id:desc">ID ↓</option>
-                <option value="id:asc">ID ↑</option>
-                <option value="status:asc">Status A→Z</option>
-                <option value="status:desc">Status Z→A</option>
-              </select>
-            </label>
-            <button className="btn" onClick={exportOrdersCSV}>Export Orders</button>
-          </Toolbar>
+          <h2 className="admin-section-title">📦 Order Management</h2>
+          <p className="admin-section-subtitle">View and manage customer orders</p>
 
-          <div className="table-wrap">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Amount</th>
-                  <th>Customer</th>
-                  <th>Items</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading.orders && (<tr><td colSpan={7}>Loading orders…</td></tr>)}
-                {!loading.orders && sortedOrders().map((o) => {
-                  const amount = (o.items || []).reduce((sum, i) => sum + (i.price || 0), 0);
-                  const date = o.created_at ? new Date(o.created_at).toLocaleString() : "—";
-                  return (
-                    <tr key={o.id}>
-                      <td>#{o.id}</td>
-                      <td>{date}</td>
-                      <td>
-                        <select defaultValue={o.status} onChange={(e) => updateOrderStatus(o.id, e.target.value)}>
-                          <option value="pending">pending</option>
-                          <option value="confirmed">confirmed</option>
-                          <option value="shipped">shipped</option>
-                          <option value="completed">completed</option>
-                        </select>
-                      </td>
-                      <td>₹{amount}</td>
-                      <td>{o.customer_name || "—"} ({o.customer_phone || "—"})</td>
-                      <td>{(o.items || []).map((i) => i.title).join(", ")}</td>
-                      <td>
-                        <a className="btn" href={`/admin/orders?id=${o.id}`}>View</a>
-                      </td>
-                    </tr>
-                  );
-                })}
-                {!loading.orders && orders.length === 0 && (<tr><td colSpan={7}>No orders found.</td></tr>)}
-              </tbody>
-            </table>
-          </div>
+          <OrderManagementSection
+            orders={orders}
+            loading={loading.orders}
+            onStatusUpdate={updateOrderStatus}
+            onExport={exportOrdersCSV}
+          />
         </section>
       )}
 

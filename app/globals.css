@@ -2164,6 +2164,116 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
   transform: translateY(-1px);
 }
 
+/* Order Management Section */
+.order-management {
+  display: grid;
+  gap: 24px;
+}
+
+.order-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+  border: 1px solid rgba(20, 184, 166, 0.2);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #14b8a6;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.order-filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 16px;
+  background: rgba(20, 184, 166, 0.04);
+  border-radius: 12px;
+}
+
+.search-input,
+.filter-select {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  min-height: 40px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+}
+
+.customer-info {
+  display: grid;
+  gap: 4px;
+}
+
+.customer-name {
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.customer-email {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.amount {
+  font-weight: 600;
+  color: #14b8a6;
+}
+
+.status-select {
+  padding: 8px 12px;
+  border: 2px solid;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.status-select:hover {
+  opacity: 0.8;
+}
+
+.results-info {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  padding: 12px;
+}
+
 /* Product Form Grid */
 .form-grid {
   display: grid;
