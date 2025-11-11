@@ -8,7 +8,9 @@ export default function ProductFormSection({
   setProductForm,
   onSubmit,
   categories = [],
-  onCategoriesUpdate
+  onCategoriesUpdate,
+  isEditMode = false,
+  onCancelEdit = null
 }) {
   const [imagePreview, setImagePreview] = useState('');
   const [showNewCategory, setShowNewCategory] = useState(false);
@@ -101,8 +103,19 @@ export default function ProductFormSection({
   };
 
   return (
-    <form className="admin-form" onSubmit={onSubmit} aria-label="Add product">
-      <h3>Add Product</h3>
+    <form className="admin-form" onSubmit={onSubmit} aria-label={isEditMode ? "Edit product" : "Add product"}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <h3>{isEditMode ? 'Edit Product' : 'Add Product'}</h3>
+        {isEditMode && onCancelEdit && (
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={onCancelEdit}
+          >
+            Cancel Edit
+          </button>
+        )}
+      </div>
       
       <div className="form-grid">
         <div className="form-group">
@@ -297,7 +310,7 @@ export default function ProductFormSection({
       </div>
 
       <button type="submit" className="btn btn-primary">
-        Add Product
+        {isEditMode ? 'Save Changes' : 'Add Product'}
       </button>
     </form>
   );

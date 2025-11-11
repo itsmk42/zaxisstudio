@@ -36,6 +36,8 @@ export default function AdminDashboardClient() {
     seoTitle: "",
     seoDescription: ""
   });
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingProductId, setEditingProductId] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState({ open: false, id: null, title: "" });
 
   // Search/filter
@@ -136,6 +138,50 @@ export default function AdminDashboardClient() {
     return productForm.imageFiles.map((file) => URL.createObjectURL(file));
   }
 
+  function resetProductForm() {
+    setProductForm({
+      title: "",
+      description: "",
+      price: "",
+      sku: "",
+      inventory: "",
+      imageFiles: [],
+      imageUrl: "",
+      categories: "",
+      tags: "",
+      seoTitle: "",
+      seoDescription: ""
+    });
+  }
+
+  function startEditProduct(product) {
+    setProductForm({
+      title: product.title || "",
+      description: product.description || "",
+      price: product.price || "",
+      sku: product.sku || "",
+      inventory: product.inventory || "",
+      imageFiles: [],
+      imageUrl: product.image_url || "",
+      categories: product.category || "",
+      tags: product.tags || "",
+      seoTitle: product.seo_title || "",
+      seoDescription: product.seo_description || ""
+    });
+    setEditingProductId(product.id);
+    setIsEditMode(true);
+    // Scroll to form
+    setTimeout(() => {
+      document.querySelector('.admin-form')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }
+
+  function cancelEditProduct() {
+    resetProductForm();
+    setIsEditMode(false);
+    setEditingProductId(null);
+  }
+
   async function addProduct(e) {
     e.preventDefault();
     const price = Number(productForm.price);
@@ -164,6 +210,30 @@ export default function AdminDashboardClient() {
       seo_description: productForm.seoDescription || "",
     };
 
+    // If in edit mode, update the product
+    if (isEditMode && editingProductId) {
+      const res = await fetch("/api/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...payload, _method: "PUT", id: editingProductId })
+      });
+
+      const json = await res.json().catch(() => ({}));
+      if (res.ok) {
+        notify("Product updated successfully!", "success");
+        try { await logAudit({ action: "product_update", payload: { id: editingProductId, ...payload } }); } catch {}
+        resetProductForm();
+        setIsEditMode(false);
+        setEditingProductId(null);
+        fetchProducts();
+      } else {
+        const reason = json?.error || (Array.isArray(json?.details) ? json.details.join(", ") : "Failed to update product");
+        notify(reason, "error");
+      }
+      return;
+    }
+
+    // Otherwise, add new product
     const res = await fetch("/api/products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -174,21 +244,7 @@ export default function AdminDashboardClient() {
     if (res.ok) {
       notify("Product added successfully!", "success");
       try { await logAudit({ action: "product_add", payload }); } catch {}
-      // Reset form
-      setProductForm((f) => ({
-        ...f,
-        title: "",
-        price: "",
-        imageUrl: "",
-        description: "",
-        sku: "",
-        inventory: "",
-        categories: "",
-        tags: "",
-        seoTitle: "",
-        seoDescription: "",
-        imageFiles: []
-      }));
+      resetProductForm();
       fetchProducts();
     } else {
       const reason = json?.error || (Array.isArray(json?.details) ? json.details.join(", ") : "Failed to add product");
@@ -386,6 +442,8 @@ export default function AdminDashboardClient() {
             onSubmit={addProduct}
             categories={categories}
             onCategoriesUpdate={fetchCategories}
+            isEditMode={isEditMode}
+            onCancelEdit={cancelEditProduct}
           />
           {productPreviewImages().length > 0 && (
             <div className="grid three" style={{ marginTop: 12 }}>
@@ -420,6 +478,7 @@ export default function AdminDashboardClient() {
                     </td>
                     <td>
                       <div className="inline">
+                        <button className="btn btn-secondary" onClick={() => startEditProduct(p)}>Edit</button>
                         <button className="btn" onClick={() => updateProduct(p)}>Save</button>
                         <button className="btn danger" onClick={() => setConfirmDelete({ open: true, id: p.id, title: p.title })}>Delete</button>
                       </div>
