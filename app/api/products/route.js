@@ -74,7 +74,7 @@ export async function POST(req) {
     return json(200, { ok: true });
   }
   if (body._method === 'PUT' || body._method === 'PATCH') {
-    const { id, ...update } = body;
+    const { id, _method, ...update } = body;
     const { data, error } = await supabaseServer().from('products').update(update).eq('id', id).select('*').single();
     if (error) {
       console.error('[products:update] error', error);
