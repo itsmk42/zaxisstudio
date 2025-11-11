@@ -674,9 +674,18 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
 .navbar-dark .nav-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 16px;
   padding: 10px 16px;
+  position: relative;
+}
+.navbar-dark .nav-inner .nav-toggle {
+  position: absolute;
+  left: 16px;
+}
+.navbar-dark .nav-inner .nav-icons {
+  position: absolute;
+  right: 16px;
 }
 .navbar-dark .brand {
   color: var(--nav-dark-text);
