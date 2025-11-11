@@ -4,6 +4,7 @@ import ConfirmDialog from "./ConfirmDialog";
 import ToastContainer, { notify } from "./Toast";
 import CarouselFormSection from "./CarouselFormSection";
 import CarouselSlidesList from "./CarouselSlidesList";
+import ProductFormSection from "./ProductFormSection";
 import { supabaseBrowser } from "../../lib/supabaseClient";
 
 function Toolbar({ children }) {
@@ -13,11 +14,12 @@ function Toolbar({ children }) {
 export default function AdminDashboardClient() {
   const [tab, setTab] = useState("products");
 
-  // Shared state: products, orders, carousel
+  // Shared state: products, orders, carousel, categories
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [carouselSlides, setCarouselSlides] = useState([]);
-  const [loading, setLoading] = useState({ products: false, orders: false, carousel: false });
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState({ products: false, orders: false, carousel: false, categories: false });
 
   // Product form state
   const [productForm, setProductForm] = useState({
@@ -86,11 +88,25 @@ export default function AdminDashboardClient() {
     }
   }
 
+  async function fetchCategories() {
+    try {
+      setLoading((l) => ({ ...l, categories: true }));
+      const res = await fetch("/api/admin/categories");
+      const data = await res.json();
+      setCategories(Array.isArray(data) ? data : []);
+    } catch (e) {
+      notify("Failed to load categories", "error");
+    } finally {
+      setLoading((l) => ({ ...l, categories: false }));
+    }
+  }
+
   // Realtime updates via Supabase if configured
   useEffect(() => {
     fetchProducts();
     fetchOrders();
     fetchCarouselSlides();
+    fetchCategories();
     let productChannel, orderChannel, carouselChannel;
     try {
       productChannel = supabaseBrowser
@@ -330,63 +346,20 @@ export default function AdminDashboardClient() {
             </label>
           </Toolbar>
 
-          <form className="form" onSubmit={addProduct} aria-label="Add product">
-            <h3>Add Product</h3>
-            <div className="grid two">
-              <label>
-                Name
-                <input required value={productForm.title} onChange={(e) => setProductForm({ ...productForm, title: e.target.value })} />
-              </label>
-              <label>
-                Price (₹)
-                <input type="number" min="0" value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: e.target.value })} />
-              </label>
-              <label>
-                SKU
-                <input value={productForm.sku} onChange={(e) => setProductForm({ ...productForm, sku: e.target.value })} />
-              </label>
-              <label>
-                Inventory
-                <input type="number" min="0" value={productForm.inventory} onChange={(e) => setProductForm({ ...productForm, inventory: e.target.value })} />
-              </label>
-              <label className="col-span">
-                Description
-                <textarea value={productForm.description} onChange={(e) => setProductForm({ ...productForm, description: e.target.value })} />
-              </label>
-              <label>
-                Primary Image URL
-                <input value={productForm.imageUrl} onChange={(e) => setProductForm({ ...productForm, imageUrl: e.target.value })} />
-              </label>
-              <label>
-                Upload Images (preview only)
-                <input type="file" multiple accept="image/*" onChange={(e) => setProductForm({ ...productForm, imageFiles: Array.from(e.target.files || []) })} />
-              </label>
-              <label>
-                Categories
-                <input value={productForm.categories} onChange={(e) => setProductForm({ ...productForm, categories: e.target.value })} />
-              </label>
-              <label>
-                Tags
-                <input value={productForm.tags} onChange={(e) => setProductForm({ ...productForm, tags: e.target.value })} />
-              </label>
-              <label>
-                SEO Title
-                <input value={productForm.seoTitle} onChange={(e) => setProductForm({ ...productForm, seoTitle: e.target.value })} />
-              </label>
-              <label>
-                SEO Description
-                <input value={productForm.seoDescription} onChange={(e) => setProductForm({ ...productForm, seoDescription: e.target.value })} />
-              </label>
+          <ProductFormSection
+            productForm={productForm}
+            setProductForm={setProductForm}
+            onSubmit={addProduct}
+            categories={categories}
+            onCategoriesUpdate={fetchCategories}
+          />
+          {productPreviewImages().length > 0 && (
+            <div className="grid three" style={{ marginTop: 12 }}>
+              {productPreviewImages().map((src, i) => (
+                <img key={i} src={src} alt={`Preview ${i + 1}`} style={{ width: "100%", borderRadius: 8 }} />
+              ))}
             </div>
-            <button className="btn primary" type="submit">Save Product</button>
-            {productPreviewImages().length > 0 && (
-              <div className="grid three" style={{ marginTop: 12 }}>
-                {productPreviewImages().map((src, i) => (
-                  <img key={i} src={src} alt={`Preview ${i + 1}`} style={{ width: "100%", borderRadius: 8 }} />
-                ))}
-              </div>
-            )}
-          </form>
+          )}
 
           <div className="table-wrap">
             <table className="table">

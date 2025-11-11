@@ -2164,6 +2164,60 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
   transform: translateY(-1px);
 }
 
+/* Product Form Grid */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.form-col-span {
+  grid-column: 1 / -1;
+}
+
+.category-input-group {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.category-input-group select {
+  flex: 1;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.category-input-group select:focus {
+  outline: none;
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+}
+
+.new-category-input {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.new-category-input input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.new-category-input input:focus {
+  outline: none;
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .admin-header-gradient {
@@ -2194,5 +2248,26 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
 
   .admin-content-grid {
     grid-template-columns: 1fr;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .category-input-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .category-input-group select {
+    width: 100%;
+  }
+
+  .new-category-input {
+    flex-direction: column;
+  }
+
+  .new-category-input input {
+    width: 100%;
   }
 }
