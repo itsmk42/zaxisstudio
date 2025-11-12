@@ -495,25 +495,45 @@ export default function ProductFormSection({
       </div>
       </CollapsibleSection>
 
-      {/* PRODUCT IMAGES SECTION */}
-      <CollapsibleSection title="Product Images" section="images" icon="🖼️">
+      {/* PRODUCT IMAGES SECTION - HIDDEN */}
+      {/* Images are now managed through variant images. This section is kept for reference but hidden. */}
+
+      {/* PRODUCT VARIANTS SECTION */}
+      <CollapsibleSection title="Product Variants" section="variants" icon="🎨">
         <div style={{ marginBottom: '16px' }}>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={addImage} style={{ marginBottom: '12px' }}>
-            <Plus size={16} style={{ marginRight: '4px' }} /> Add Image
+          <button type="button" className="btn btn-secondary btn-sm" onClick={addVariant} style={{ marginBottom: '12px' }}>
+            <Plus size={16} style={{ marginRight: '4px' }} /> Add Variant
           </button>
         </div>
         {(productForm.variants || []).length > 0 ? (
           <div style={{ display: 'grid', gap: '16px' }}>
             {productForm.variants.map((variant, idx) => (
               <div key={idx} style={{ padding: '16px', background: '#f9f9f9', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr auto', gap: '8px', marginBottom: '12px', alignItems: 'end' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr auto', gap: '8px', marginBottom: '12px', alignItems: 'end' }}>
                   <input
                     type="text"
-                    placeholder="Variant name (e.g., Red, Large)"
+                    placeholder="Variant name (e.g., Large)"
                     value={variant.variant_name}
                     onChange={(e) => updateVariant(idx, 'variant_name', e.target.value)}
                     style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
                   />
+                  <select
+                    value={variant.color || ''}
+                    onChange={(e) => updateVariant(idx, 'color', e.target.value)}
+                    style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                  >
+                    <option value="">Select Color</option>
+                    <option value="Red">Red</option>
+                    <option value="Blue">Blue</option>
+                    <option value="Green">Green</option>
+                    <option value="Black">Black</option>
+                    <option value="White">White</option>
+                    <option value="Yellow">Yellow</option>
+                    <option value="Purple">Purple</option>
+                    <option value="Orange">Orange</option>
+                    <option value="Pink">Pink</option>
+                    <option value="Gray">Gray</option>
+                  </select>
                   <input
                     type="number"
                     placeholder="Price"
@@ -540,7 +560,7 @@ export default function ProductFormSection({
                   </button>
                 </div>
 
-                {/* Variant Image Upload */}
+                {/* Variant Image Upload - File only, no URL input */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', alignItems: 'start' }}>
                   <div>
                     <label style={{ fontSize: '12px', color: '#666', marginBottom: '4px', display: 'block' }}>Variant Image (Optional)</label>

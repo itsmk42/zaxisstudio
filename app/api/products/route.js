@@ -112,7 +112,8 @@ export async function POST(req) {
           price: v.price,
           stock_quantity: v.stock_quantity,
           sku: v.sku,
-          image_url: v.image_url || null
+          image_url: v.image_url || null,
+          color: v.color || null
         }));
         await supabaseServer().from('product_variants').insert(variantsToInsert).catch(e => console.warn('[products:variants] insert warning', e));
       }
@@ -198,7 +199,8 @@ export async function POST(req) {
       price: v.price,
       stock_quantity: v.stock_quantity,
       sku: v.sku,
-      image_url: v.image_url || null
+      image_url: v.image_url || null,
+      color: v.color || null
     }));
     await supabaseServer().from('product_variants').insert(variantsToInsert).catch(e => console.warn('[products:variants] insert warning', e));
   }

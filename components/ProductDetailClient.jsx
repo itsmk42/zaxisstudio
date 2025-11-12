@@ -145,11 +145,11 @@ export default function ProductDetailClient({ product, relatedProducts = [] }) {
           {/* Price */}
           <div className="product-price-section">
             <div className="price-display">
-              <span className="current-price">₹{product.price}</span>
-              <span className="original-price">₹{Math.round(product.price * 1.4)}</span>
+              <span className="current-price">₹{selectedVariant ? selectedVariant.price : product.price}</span>
+              <span className="original-price">₹{Math.round((selectedVariant ? selectedVariant.price : product.price) * 1.4)}</span>
             </div>
             <div className="price-savings">
-              Save ₹{Math.round(product.price * 0.4)} (29% off)
+              Save ₹{Math.round((selectedVariant ? selectedVariant.price : product.price) * 0.4)} (29% off)
             </div>
           </div>
 

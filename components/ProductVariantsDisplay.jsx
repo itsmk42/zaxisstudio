@@ -58,6 +58,7 @@ export default function ProductVariantsDisplay({
                 )}
                 <div className="variant-info">
                   <div className="variant-name">{variant.variant_name}</div>
+                  {variant.color && <div className="variant-color" style={{ fontSize: '12px', color: '#666' }}>{variant.color}</div>}
                   <div className="variant-price">₹{variant.price}</div>
                   {!isInStock && <div className="stock-badge">Out of Stock</div>}
                 </div>
@@ -70,8 +71,16 @@ export default function ProductVariantsDisplay({
       {/* Selected variant details */}
       {selectedVariant && (
         <div className="selected-variant-info" style={{ marginTop: '16px', padding: '12px', background: '#f5f5f5', borderRadius: '8px' }}>
-          <div style={{ fontSize: '14px', color: '#666' }}>
+          <div style={{ fontSize: '14px', color: '#333', fontWeight: '600' }}>
             <strong>Selected:</strong> {selectedVariant.variant_name}
+          </div>
+          {selectedVariant.color && (
+            <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+              Color: <strong>{selectedVariant.color}</strong>
+            </div>
+          )}
+          <div style={{ fontSize: '14px', color: '#0083B0', fontWeight: '600', marginTop: '4px' }}>
+            Price: ₹{selectedVariant.price}
           </div>
           {selectedVariant.sku && (
             <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
@@ -81,6 +90,11 @@ export default function ProductVariantsDisplay({
           {selectedVariant.stock_quantity > 0 && (
             <div style={{ fontSize: '12px', color: '#28a745', marginTop: '4px' }}>
               ✓ {selectedVariant.stock_quantity} in stock
+            </div>
+          )}
+          {selectedVariant.stock_quantity === 0 && (
+            <div style={{ fontSize: '12px', color: '#dc3545', marginTop: '4px' }}>
+              ✗ Out of stock
             </div>
           )}
         </div>
