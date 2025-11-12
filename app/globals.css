@@ -624,6 +624,156 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
 .footer .tnc-text { margin: 4px 0 8px; font-size: 14px; line-height: 1.6; color: var(--muted); }
 .footer.navbar-dark .tnc-text { color: var(--nav-dark-muted); }
 
+/* Footer links */
+.footer-links {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.footer-link {
+  color: var(--nav-dark-text);
+  text-decoration: none;
+  font-size: 14px;
+  transition: opacity 0.2s ease;
+}
+
+.footer-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* Policy pages styling */
+.policy-page {
+  padding: 40px 16px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.policy-content {
+  display: grid;
+  gap: 32px;
+  margin-top: 24px;
+}
+
+.policy-section {
+  display: grid;
+  gap: 12px;
+}
+
+.policy-section h2 {
+  font-size: clamp(18px, 2vw, 22px);
+  font-weight: 700;
+  color: var(--text-strong);
+  margin: 0;
+}
+
+.policy-section p {
+  margin: 0;
+  line-height: 1.8;
+  color: var(--text-primary);
+}
+
+.policy-section a {
+  color: var(--deep-teal);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.policy-section a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.policy-list {
+  margin: 12px 0;
+  padding-left: 24px;
+  list-style: disc;
+}
+
+.policy-list li {
+  margin: 8px 0;
+  line-height: 1.8;
+  color: var(--text-primary);
+}
+
+/* Contact page specific styles */
+.contact-section {
+  text-align: center;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.contact-info {
+  display: grid;
+  gap: 24px;
+}
+
+.contact-item {
+  padding: 20px;
+  background: var(--accent-green);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.contact-item h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.contact-item p {
+  margin: 0;
+  line-height: 1.8;
+}
+
+.contact-note {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 8px !important;
+}
+
+.faq-item {
+  padding: 16px;
+  background: var(--accent-blue);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.faq-item h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.faq-item p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.contact-cta {
+  text-align: center;
+  padding: 32px;
+  background: var(--accent-green);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.contact-cta h2 {
+  margin-bottom: 16px;
+}
+
+.contact-cta .btn {
+  margin-top: 16px;
+}
+
 /* Accent button variants (matte finish) */
 .btn.accent-green { background: var(--accent-green); color: var(--text-strong); border-color: #BBD0C3; font-weight: 600; letter-spacing: 0.025em; }
 .btn.accent-blue { background: var(--accent-blue); color: var(--text-strong); border-color: #BBD0C3; font-weight: 600; letter-spacing: 0.025em; }

@@ -35,6 +35,11 @@ export default function RootLayout({ children }) {
                 For assistance, please contact support.
               </p>
             </div>
+            <nav className="footer-links" aria-label="Footer navigation">
+              <Link href="/terms" className="footer-link">Terms & Conditions</Link>
+              <Link href="/shipping" className="footer-link">Shipping Policy</Link>
+              <Link href="/contact" className="footer-link">Contact</Link>
+            </nav>
             <span className="footer-copy">© {new Date().getFullYear()} Zaxis Studio</span>
           </div>
         </footer>
