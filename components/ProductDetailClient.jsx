@@ -30,6 +30,23 @@ export default function ProductDetailClient({ product, relatedProducts = [] }) {
   const isStock = !product.image_url || /picsum\.photos/i.test(product.image_url);
   const productImage = isStock ? '/placeholder.svg' : product.image_url;
 
+  // Get images from product.images array or fallback to single image_url
+  const productImages = product.images && product.images.length > 0
+    ? product.images
+        .sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
+        .map(img => isStock ? '/placeholder.svg' : img.image_url)
+    : [productImage];
+
+  // Build specifications from product data
+  const specifications = product.specifications && product.specifications.length > 0
+    ? product.specifications
+    : [
+        { spec_key: 'Dimensions', spec_value: '6" x 6" x 8"' },
+        { spec_key: 'Material', spec_value: 'Premium PLA with LED components' },
+        { spec_key: 'Power', spec_value: 'Wall-powered, 5V USB' },
+        { spec_key: 'Weight', spec_value: '250g' },
+      ];
+
   // Accordion items for details
   const detailsItems = [
     {
@@ -51,22 +68,12 @@ export default function ProductDetailClient({ product, relatedProducts = [] }) {
       content: (
         <div>
           <dl style={{ display: 'grid', gap: '12px' }}>
-            <div>
-              <dt style={{ fontWeight: 'bold' }}>Dimensions</dt>
-              <dd>6" x 6" x 8"</dd>
-            </div>
-            <div>
-              <dt style={{ fontWeight: 'bold' }}>Material</dt>
-              <dd>Premium PLA with LED components</dd>
-            </div>
-            <div>
-              <dt style={{ fontWeight: 'bold' }}>Power</dt>
-              <dd>Wall-powered, 5V USB</dd>
-            </div>
-            <div>
-              <dt style={{ fontWeight: 'bold' }}>Weight</dt>
-              <dd>250g</dd>
-            </div>
+            {specifications.map((spec, idx) => (
+              <div key={idx}>
+                <dt style={{ fontWeight: 'bold' }}>{spec.spec_key}</dt>
+                <dd>{spec.spec_value}</dd>
+              </div>
+            ))}
           </dl>
         </div>
       ),
@@ -113,7 +120,7 @@ export default function ProductDetailClient({ product, relatedProducts = [] }) {
       <div className="container product-detail-container">
         {/* Gallery section */}
         <div className="product-gallery-section">
-          <ProductGallery images={[productImage]} productTitle={product.title} />
+          <ProductGallery images={productImages} productTitle={product.title} />
         </div>
 
         {/* Info section */}
