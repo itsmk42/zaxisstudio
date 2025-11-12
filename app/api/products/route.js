@@ -74,7 +74,7 @@ export async function POST(req) {
     return json(200, { ok: true });
   }
   if (body._method === 'PUT' || body._method === 'PATCH') {
-    const { id, _method, ...update } = body;
+    const { id, _method, variants, specifications, images, ...update } = body;
 
     // Validate that id exists
     if (!id) {
@@ -98,6 +98,56 @@ export async function POST(req) {
     if (!data) {
       console.warn('[products:update] no product found with id', productId);
       return json(404, { error: 'Product not found' });
+    }
+
+    // Handle variants update
+    if (variants && Array.isArray(variants)) {
+      // Delete existing variants
+      await supabaseServer().from('product_variants').delete().eq('product_id', productId).catch(e => console.warn('[products:variants] delete warning', e));
+      // Insert new variants
+      if (variants.length > 0) {
+        const variantsToInsert = variants.map(v => ({
+          product_id: productId,
+          variant_name: v.variant_name,
+          price: v.price,
+          stock_quantity: v.stock_quantity,
+          sku: v.sku
+        }));
+        await supabaseServer().from('product_variants').insert(variantsToInsert).catch(e => console.warn('[products:variants] insert warning', e));
+      }
+    }
+
+    // Handle specifications update
+    if (specifications && Array.isArray(specifications)) {
+      // Delete existing specifications
+      await supabaseServer().from('product_specifications').delete().eq('product_id', productId).catch(e => console.warn('[products:specifications] delete warning', e));
+      // Insert new specifications
+      if (specifications.length > 0) {
+        const specsToInsert = specifications.map((s, idx) => ({
+          product_id: productId,
+          spec_key: s.spec_key,
+          spec_value: s.spec_value,
+          display_order: idx
+        }));
+        await supabaseServer().from('product_specifications').insert(specsToInsert).catch(e => console.warn('[products:specifications] insert warning', e));
+      }
+    }
+
+    // Handle images update
+    if (images && Array.isArray(images)) {
+      // Delete existing images
+      await supabaseServer().from('product_images').delete().eq('product_id', productId).catch(e => console.warn('[products:images] delete warning', e));
+      // Insert new images
+      if (images.length > 0) {
+        const imagesToInsert = images.map((img, idx) => ({
+          product_id: productId,
+          image_url: img.image_url,
+          alt_text: img.alt_text,
+          display_order: idx,
+          is_primary: img.is_primary || idx === 0
+        }));
+        await supabaseServer().from('product_images').insert(imagesToInsert).catch(e => console.warn('[products:images] insert warning', e));
+      }
     }
 
     // Revalidate cached pages when product is updated
@@ -137,6 +187,41 @@ export async function POST(req) {
     }
     return json(500, { error: message });
   }
+
+  // Handle variants, specifications, and images if provided
+  const productId = data.id;
+  if (body.variants && Array.isArray(body.variants) && body.variants.length > 0) {
+    const variantsToInsert = body.variants.map(v => ({
+      product_id: productId,
+      variant_name: v.variant_name,
+      price: v.price,
+      stock_quantity: v.stock_quantity,
+      sku: v.sku
+    }));
+    await supabaseServer().from('product_variants').insert(variantsToInsert).catch(e => console.warn('[products:variants] insert warning', e));
+  }
+
+  if (body.specifications && Array.isArray(body.specifications) && body.specifications.length > 0) {
+    const specsToInsert = body.specifications.map((s, idx) => ({
+      product_id: productId,
+      spec_key: s.spec_key,
+      spec_value: s.spec_value,
+      display_order: idx
+    }));
+    await supabaseServer().from('product_specifications').insert(specsToInsert).catch(e => console.warn('[products:specifications] insert warning', e));
+  }
+
+  if (body.images && Array.isArray(body.images) && body.images.length > 0) {
+    const imagesToInsert = body.images.map((img, idx) => ({
+      product_id: productId,
+      image_url: img.image_url,
+      alt_text: img.alt_text,
+      display_order: idx,
+      is_primary: img.is_primary || idx === 0
+    }));
+    await supabaseServer().from('product_images').insert(imagesToInsert).catch(e => console.warn('[products:images] insert warning', e));
+  }
+
   // Revalidate cached pages when new product is created
   try {
     revalidatePath('/');

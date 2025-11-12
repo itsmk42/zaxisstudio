@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { notify } from './Toast';
+import { X, Plus, GripVertical } from 'lucide-react';
 
 export default function ProductFormSection({
   productForm,
@@ -17,6 +18,8 @@ export default function ProductFormSection({
   const [newCategory, setNewCategory] = useState('');
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [draggedImageIndex, setDraggedImageIndex] = useState(null);
+  const [autoGenerateSKU, setAutoGenerateSKU] = useState(false);
 
   const handleImageChange = async (e) => {
     const file = e.target.files?.[0];
@@ -102,6 +105,83 @@ export default function ProductFormSection({
     }
   };
 
+  const generateSKU = () => {
+    if (!productForm.title.trim()) {
+      notify('Product name is required to generate SKU', 'error');
+      return;
+    }
+    const baseSKU = productForm.title
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+    const sku = `${baseSKU}-${Date.now().toString().slice(-4)}`;
+    setProductForm({ ...productForm, sku });
+    notify(`SKU generated: ${sku}`, 'success');
+  };
+
+  const addVariant = () => {
+    const variants = productForm.variants || [];
+    variants.push({ variant_name: '', price: '', stock_quantity: '', sku: '' });
+    setProductForm({ ...productForm, variants });
+  };
+
+  const updateVariant = (index, field, value) => {
+    const variants = [...(productForm.variants || [])];
+    variants[index] = { ...variants[index], [field]: value };
+    setProductForm({ ...productForm, variants });
+  };
+
+  const removeVariant = (index) => {
+    const variants = (productForm.variants || []).filter((_, i) => i !== index);
+    setProductForm({ ...productForm, variants });
+  };
+
+  const addSpecification = () => {
+    const specs = productForm.specifications || [];
+    specs.push({ spec_key: '', spec_value: '' });
+    setProductForm({ ...productForm, specifications: specs });
+  };
+
+  const updateSpecification = (index, field, value) => {
+    const specs = [...(productForm.specifications || [])];
+    specs[index] = { ...specs[index], [field]: value };
+    setProductForm({ ...productForm, specifications: specs });
+  };
+
+  const removeSpecification = (index) => {
+    const specs = (productForm.specifications || []).filter((_, i) => i !== index);
+    setProductForm({ ...productForm, specifications: specs });
+  };
+
+  const addImage = () => {
+    const images = productForm.images || [];
+    images.push({ image_url: '', alt_text: '', is_primary: images.length === 0 });
+    setProductForm({ ...productForm, images });
+  };
+
+  const updateImage = (index, field, value) => {
+    const images = [...(productForm.images || [])];
+    images[index] = { ...images[index], [field]: value };
+    setProductForm({ ...productForm, images });
+  };
+
+  const removeImage = (index) => {
+    const images = (productForm.images || []).filter((_, i) => i !== index);
+    // Ensure at least one primary image
+    if (images.length > 0 && !images.some(img => img.is_primary)) {
+      images[0].is_primary = true;
+    }
+    setProductForm({ ...productForm, images });
+  };
+
+  const moveImage = (fromIndex, toIndex) => {
+    const images = [...(productForm.images || [])];
+    const [movedImage] = images.splice(fromIndex, 1);
+    images.splice(toIndex, 0, movedImage);
+    setProductForm({ ...productForm, images });
+  };
+
   return (
     <form className="admin-form" onSubmit={onSubmit} aria-label={isEditMode ? "Edit product" : "Add product"}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -145,13 +225,24 @@ export default function ProductFormSection({
 
         <div className="form-group">
           <label htmlFor="product-sku">SKU</label>
-          <input
-            id="product-sku"
-            type="text"
-            value={productForm.sku}
-            onChange={(e) => setProductForm({ ...productForm, sku: e.target.value })}
-            placeholder="SKU"
-          />
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <input
+              id="product-sku"
+              type="text"
+              value={productForm.sku}
+              onChange={(e) => setProductForm({ ...productForm, sku: e.target.value })}
+              placeholder="SKU"
+              style={{ flex: 1 }}
+            />
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={generateSKU}
+              title="Auto-generate SKU from product name"
+            >
+              Auto-Gen
+            </button>
+          </div>
         </div>
 
         <div className="form-group">
@@ -309,7 +400,145 @@ export default function ProductFormSection({
         </div>
       </div>
 
-      <button type="submit" className="btn btn-primary">
+      {/* Product Variants Section */}
+      <div className="form-section" style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid #e0e0e0' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h4 style={{ margin: 0 }}>Product Variants</h4>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={addVariant}>
+            <Plus size={16} style={{ marginRight: '4px' }} /> Add Variant
+          </button>
+        </div>
+        {(productForm.variants || []).length > 0 ? (
+          <div style={{ display: 'grid', gap: '12px' }}>
+            {productForm.variants.map((variant, idx) => (
+              <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr auto', gap: '8px', alignItems: 'end', padding: '12px', background: '#f9f9f9', borderRadius: '8px' }}>
+                <input
+                  type="text"
+                  placeholder="Variant name (e.g., Red, Large)"
+                  value={variant.variant_name}
+                  onChange={(e) => updateVariant(idx, 'variant_name', e.target.value)}
+                  style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                />
+                <input
+                  type="number"
+                  placeholder="Price"
+                  value={variant.price}
+                  onChange={(e) => updateVariant(idx, 'price', e.target.value)}
+                  style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                />
+                <input
+                  type="number"
+                  placeholder="Stock"
+                  value={variant.stock_quantity}
+                  onChange={(e) => updateVariant(idx, 'stock_quantity', e.target.value)}
+                  style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                />
+                <input
+                  type="text"
+                  placeholder="SKU"
+                  value={variant.sku}
+                  onChange={(e) => updateVariant(idx, 'sku', e.target.value)}
+                  style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                />
+                <button type="button" className="btn btn-danger btn-sm" onClick={() => removeVariant(idx)}>
+                  <X size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p style={{ color: '#999', fontSize: '14px' }}>No variants added yet. Click "Add Variant" to create one.</p>
+        )}
+      </div>
+
+      {/* Product Specifications Section */}
+      <div className="form-section" style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid #e0e0e0' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h4 style={{ margin: 0 }}>Product Specifications</h4>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={addSpecification}>
+            <Plus size={16} style={{ marginRight: '4px' }} /> Add Specification
+          </button>
+        </div>
+        {(productForm.specifications || []).length > 0 ? (
+          <div style={{ display: 'grid', gap: '12px' }}>
+            {productForm.specifications.map((spec, idx) => (
+              <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 2fr auto', gap: '8px', alignItems: 'end', padding: '12px', background: '#f9f9f9', borderRadius: '8px' }}>
+                <input
+                  type="text"
+                  placeholder="Key (e.g., Material)"
+                  value={spec.spec_key}
+                  onChange={(e) => updateSpecification(idx, 'spec_key', e.target.value)}
+                  style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                />
+                <input
+                  type="text"
+                  placeholder="Value (e.g., PLA Plastic)"
+                  value={spec.spec_value}
+                  onChange={(e) => updateSpecification(idx, 'spec_value', e.target.value)}
+                  style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                />
+                <button type="button" className="btn btn-danger btn-sm" onClick={() => removeSpecification(idx)}>
+                  <X size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p style={{ color: '#999', fontSize: '14px' }}>No specifications added yet. Click "Add Specification" to create one.</p>
+        )}
+      </div>
+
+      {/* Product Images Section */}
+      <div className="form-section" style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid #e0e0e0' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h4 style={{ margin: 0 }}>Product Images</h4>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={addImage}>
+            <Plus size={16} style={{ marginRight: '4px' }} /> Add Image
+          </button>
+        </div>
+        {(productForm.images || []).length > 0 ? (
+          <div style={{ display: 'grid', gap: '12px' }}>
+            {productForm.images.map((image, idx) => (
+              <div key={idx} style={{ display: 'grid', gridTemplateColumns: 'auto 1fr 1fr auto auto', gap: '8px', alignItems: 'end', padding: '12px', background: '#f9f9f9', borderRadius: '8px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#666', minWidth: '24px' }}>#{idx + 1}</div>
+                <input
+                  type="url"
+                  placeholder="Image URL"
+                  value={image.image_url}
+                  onChange={(e) => updateImage(idx, 'image_url', e.target.value)}
+                  style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                />
+                <input
+                  type="text"
+                  placeholder="Alt text"
+                  value={image.alt_text}
+                  onChange={(e) => updateImage(idx, 'alt_text', e.target.value)}
+                  style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                />
+                <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={image.is_primary}
+                    onChange={(e) => {
+                      const images = [...(productForm.images || [])];
+                      images.forEach((img, i) => img.is_primary = i === idx);
+                      setProductForm({ ...productForm, images });
+                    }}
+                  />
+                  <span style={{ fontSize: '12px' }}>Primary</span>
+                </label>
+                <button type="button" className="btn btn-danger btn-sm" onClick={() => removeImage(idx)}>
+                  <X size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p style={{ color: '#999', fontSize: '14px' }}>No images added yet. Click "Add Image" to create one.</p>
+        )}
+      </div>
+
+      <button type="submit" className="btn btn-primary" style={{ marginTop: '24px' }}>
         {isEditMode ? 'Save Changes' : 'Add Product'}
       </button>
     </form>

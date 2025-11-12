@@ -34,7 +34,10 @@ export default function AdminDashboardClient() {
     categories: "",
     tags: "",
     seoTitle: "",
-    seoDescription: ""
+    seoDescription: "",
+    variants: [],
+    specifications: [],
+    images: []
   });
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingProductId, setEditingProductId] = useState(null);
@@ -150,7 +153,10 @@ export default function AdminDashboardClient() {
       categories: "",
       tags: "",
       seoTitle: "",
-      seoDescription: ""
+      seoDescription: "",
+      variants: [],
+      specifications: [],
+      images: []
     });
   }
 
@@ -166,7 +172,10 @@ export default function AdminDashboardClient() {
       categories: product.category || "",
       tags: product.tags || "",
       seoTitle: product.seo_title || "",
-      seoDescription: product.seo_description || ""
+      seoDescription: product.seo_description || "",
+      variants: product.variants || [],
+      specifications: product.specifications || [],
+      images: product.images || []
     });
     setEditingProductId(product.id);
     setIsEditMode(true);
