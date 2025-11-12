@@ -3097,3 +3097,140 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
     width: 100%;
   }
 }
+
+/* Collapsible Section Styles */
+.collapsible-section {
+  margin-bottom: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.collapsible-header {
+  width: 100%;
+  padding: 16px;
+  background: #f9f9f9;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.collapsible-header:hover {
+  background: #f0f8ff;
+}
+
+.collapsible-header.expanded {
+  background: #f0f8ff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.collapsible-header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.collapsible-toggle {
+  transform: rotate(0deg);
+  transition: transform 0.2s ease;
+}
+
+.collapsible-header.expanded .collapsible-toggle {
+  transform: rotate(180deg);
+}
+
+.collapsible-content {
+  padding: 16px;
+  background: #fff;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Admin Form Improvements */
+.admin-form {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.admin-form h2 {
+  color: var(--deep-teal);
+  margin-bottom: 8px;
+}
+
+.admin-form .form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.admin-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-form .form-group label {
+  font-weight: 600;
+  color: var(--text-strong);
+  font-size: 14px;
+}
+
+.admin-form .form-group input,
+.admin-form .form-group textarea,
+.admin-form .form-group select {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.admin-form .form-group input:focus,
+.admin-form .form-group textarea:focus,
+.admin-form .form-group select:focus {
+  outline: none;
+  border-color: var(--deep-teal);
+  box-shadow: 0 0 0 3px rgba(15, 107, 127, 0.1);
+}
+
+.admin-form .form-col-span {
+  grid-column: 1 / -1;
+}
+
+.admin-form button[type="submit"] {
+  background: var(--gradient-cta);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-form button[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 131, 176, 0.3);
+}
+
+@media (max-width: 768px) {
+  .admin-form .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .collapsible-header {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .collapsible-content {
+    padding: 12px;
+  }
+}

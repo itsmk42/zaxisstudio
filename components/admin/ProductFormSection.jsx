@@ -21,6 +21,20 @@ export default function ProductFormSection({
   const [draggedImageIndex, setDraggedImageIndex] = useState(null);
   const [autoGenerateSKU, setAutoGenerateSKU] = useState(false);
   const [uploadingVariantIndex, setUploadingVariantIndex] = useState(null);
+  const [expandedSections, setExpandedSections] = useState({
+    basic: true,
+    images: false,
+    variants: false,
+    specifications: false,
+    seo: false
+  });
+
+  const toggleSection = (section) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
 
   const handleImageChange = async (e) => {
     const file = e.target.files?.[0];
@@ -220,10 +234,50 @@ export default function ProductFormSection({
     setProductForm({ ...productForm, images });
   };
 
+  // Helper component for collapsible sections
+  const CollapsibleSection = ({ title, section, children, icon }) => (
+    <div style={{ marginBottom: '16px', border: '1px solid #e0e0e0', borderRadius: '8px', overflow: 'hidden' }}>
+      <button
+        type="button"
+        onClick={() => toggleSection(section)}
+        style={{
+          width: '100%',
+          padding: '16px',
+          background: expandedSections[section] ? '#f0f8ff' : '#f9f9f9',
+          border: 'none',
+          cursor: 'pointer',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: '16px',
+          fontWeight: '600',
+          color: '#333',
+          transition: 'all 0.2s ease'
+        }}
+      >
+        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {icon}
+          {title}
+        </span>
+        <span style={{ transform: expandedSections[section] ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}>
+          ▼
+        </span>
+      </button>
+      {expandedSections[section] && (
+        <div style={{ padding: '16px', borderTop: '1px solid #e0e0e0', background: '#fff' }}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <form className="admin-form" onSubmit={onSubmit} aria-label={isEditMode ? "Edit product" : "Add product"}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h3>{isEditMode ? 'Edit Product' : 'Add Product'}</h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+        <div>
+          <h2 style={{ margin: '0 0 4px 0' }}>{isEditMode ? 'Edit Product' : 'Add Product'}</h2>
+          <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>Organize your product information in sections below</p>
+        </div>
         {isEditMode && onCancelEdit && (
           <button
             type="button"
@@ -234,8 +288,10 @@ export default function ProductFormSection({
           </button>
         )}
       </div>
-      
-      <div className="form-grid">
+
+      {/* BASIC INFORMATION SECTION */}
+      <CollapsibleSection title="Basic Information" section="basic" icon="📝">
+        <div className="form-grid">
         <div className="form-group">
           <label htmlFor="product-name">Name *</label>
           <input
@@ -437,13 +493,13 @@ export default function ProductFormSection({
           />
         </div>
       </div>
+      </CollapsibleSection>
 
-      {/* Product Variants Section */}
-      <div className="form-section" style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid #e0e0e0' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h4 style={{ margin: 0 }}>Product Variants</h4>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={addVariant}>
-            <Plus size={16} style={{ marginRight: '4px' }} /> Add Variant
+      {/* PRODUCT IMAGES SECTION */}
+      <CollapsibleSection title="Product Images" section="images" icon="🖼️">
+        <div style={{ marginBottom: '16px' }}>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={addImage} style={{ marginBottom: '12px' }}>
+            <Plus size={16} style={{ marginRight: '4px' }} /> Add Image
           </button>
         </div>
         {(productForm.variants || []).length > 0 ? (
@@ -521,13 +577,12 @@ export default function ProductFormSection({
         ) : (
           <p style={{ color: '#999', fontSize: '14px' }}>No variants added yet. Click "Add Variant" to create one.</p>
         )}
-      </div>
+      </CollapsibleSection>
 
-      {/* Product Specifications Section */}
-      <div className="form-section" style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid #e0e0e0' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h4 style={{ margin: 0 }}>Product Specifications</h4>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={addSpecification}>
+      {/* PRODUCT SPECIFICATIONS SECTION */}
+      <CollapsibleSection title="Product Specifications" section="specifications" icon="📋">
+        <div style={{ marginBottom: '16px' }}>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={addSpecification} style={{ marginBottom: '12px' }}>
             <Plus size={16} style={{ marginRight: '4px' }} /> Add Specification
           </button>
         </div>
@@ -558,59 +613,47 @@ export default function ProductFormSection({
         ) : (
           <p style={{ color: '#999', fontSize: '14px' }}>No specifications added yet. Click "Add Specification" to create one.</p>
         )}
-      </div>
+      </CollapsibleSection>
 
-      {/* Product Images Section */}
-      <div className="form-section" style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid #e0e0e0' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h4 style={{ margin: 0 }}>Product Images</h4>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={addImage}>
-            <Plus size={16} style={{ marginRight: '4px' }} /> Add Image
-          </button>
-        </div>
-        {(productForm.images || []).length > 0 ? (
-          <div style={{ display: 'grid', gap: '12px' }}>
-            {productForm.images.map((image, idx) => (
-              <div key={idx} style={{ display: 'grid', gridTemplateColumns: 'auto 1fr 1fr auto auto', gap: '8px', alignItems: 'end', padding: '12px', background: '#f9f9f9', borderRadius: '8px' }}>
-                <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#666', minWidth: '24px' }}>#{idx + 1}</div>
-                <input
-                  type="url"
-                  placeholder="Image URL"
-                  value={image.image_url}
-                  onChange={(e) => updateImage(idx, 'image_url', e.target.value)}
-                  style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-                />
-                <input
-                  type="text"
-                  placeholder="Alt text"
-                  value={image.alt_text}
-                  onChange={(e) => updateImage(idx, 'alt_text', e.target.value)}
-                  style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-                />
-                <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
-                  <input
-                    type="checkbox"
-                    checked={image.is_primary}
-                    onChange={(e) => {
-                      const images = [...(productForm.images || [])];
-                      images.forEach((img, i) => img.is_primary = i === idx);
-                      setProductForm({ ...productForm, images });
-                    }}
-                  />
-                  <span style={{ fontSize: '12px' }}>Primary</span>
-                </label>
-                <button type="button" className="btn btn-danger btn-sm" onClick={() => removeImage(idx)}>
-                  <X size={16} />
-                </button>
-              </div>
-            ))}
+      {/* SEO SETTINGS SECTION */}
+      <CollapsibleSection title="SEO Settings" section="seo" icon="🔍">
+        <div className="form-grid">
+          <div className="form-group">
+            <label htmlFor="product-seo-title">SEO Title</label>
+            <input
+              id="product-seo-title"
+              type="text"
+              value={productForm.seoTitle}
+              onChange={(e) => setProductForm({ ...productForm, seoTitle: e.target.value })}
+              placeholder="SEO title for search engines"
+            />
           </div>
-        ) : (
-          <p style={{ color: '#999', fontSize: '14px' }}>No images added yet. Click "Add Image" to create one.</p>
-        )}
-      </div>
 
-      <button type="submit" className="btn btn-primary" style={{ marginTop: '24px' }}>
+          <div className="form-group form-col-span">
+            <label htmlFor="product-seo-desc">SEO Description</label>
+            <textarea
+              id="product-seo-desc"
+              value={productForm.seoDescription}
+              onChange={(e) => setProductForm({ ...productForm, seoDescription: e.target.value })}
+              placeholder="SEO description for search engines"
+              rows="3"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="product-tags">Tags</label>
+            <input
+              id="product-tags"
+              type="text"
+              value={productForm.tags}
+              onChange={(e) => setProductForm({ ...productForm, tags: e.target.value })}
+              placeholder="tag1, tag2, tag3"
+            />
+          </div>
+        </div>
+      </CollapsibleSection>
+
+      <button type="submit" className="btn btn-primary" style={{ marginTop: '32px', width: '100%', padding: '12px' }}>
         {isEditMode ? 'Save Changes' : 'Add Product'}
       </button>
     </form>
