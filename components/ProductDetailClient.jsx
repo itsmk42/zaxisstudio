@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import ProductGallery from './ProductGallery';
 import ProductVariants from './ProductVariants';
+import ProductVariantsDisplay from './ProductVariantsDisplay';
 import QuantitySelector from './QuantitySelector';
 import Accordion from './Accordion';
 import ReviewsSection from './ReviewsSection';
@@ -10,7 +11,9 @@ import AddToCartButton from './AddToCartButton';
 
 export default function ProductDetailClient({ product, relatedProducts = [] }) {
   const [quantity, setQuantity] = useState(1);
-  const [selectedVariant, setSelectedVariant] = useState({ color: 'black', size: 'medium' });
+  const [selectedVariant, setSelectedVariant] = useState(
+    product.variants && product.variants.length > 0 ? product.variants[0] : null
+  );
   const [showStickyCTA, setShowStickyCTA] = useState(false);
 
   // Handle scroll to show/hide sticky CTA
@@ -147,8 +150,15 @@ export default function ProductDetailClient({ product, relatedProducts = [] }) {
 
           {/* Action block */}
           <div id="action-block" className="product-action-block">
-            {/* Variants */}
-            <ProductVariants onVariantChange={setSelectedVariant} />
+            {/* Variants - Only show if product has variants from database */}
+            {product.variants && product.variants.length > 0 ? (
+              <ProductVariantsDisplay
+                variants={product.variants}
+                onVariantSelect={setSelectedVariant}
+              />
+            ) : (
+              <ProductVariants onVariantChange={setSelectedVariant} />
+            )}
 
             {/* Quantity selector */}
             <QuantitySelector onQuantityChange={setQuantity} />

@@ -1438,6 +1438,85 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
   border-color: var(--deep-teal);
 }
 
+/* Product Variants Display (Database Variants) */
+.product-variants-display {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.variants-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.variant-option {
+  padding: 12px;
+  border: 2px solid var(--border);
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+}
+
+.variant-option:hover:not(:disabled) {
+  border-color: var(--deep-teal);
+  background: var(--soft-teal);
+  transform: translateY(-2px);
+}
+
+.variant-option.active {
+  border-color: var(--deep-teal);
+  background: var(--deep-teal);
+  color: white;
+  box-shadow: 0 4px 12px rgba(15, 107, 127, 0.2);
+}
+
+.variant-option.out-of-stock {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.variant-option:disabled {
+  cursor: not-allowed;
+}
+
+.variant-name {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.variant-price {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.variant-option.active .variant-price {
+  opacity: 1;
+}
+
+.stock-badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: #dc3545;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.selected-variant-info {
+  border-left: 3px solid var(--deep-teal);
+}
+
 /* Quantity selector */
 .quantity-selector {
   display: flex;
