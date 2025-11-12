@@ -1,7 +1,12 @@
 "use client";
 import { useState } from 'react';
+import Image from 'next/image';
 
-export default function ProductVariantsDisplay({ variants = [], onVariantSelect = () => {} }) {
+export default function ProductVariantsDisplay({
+  variants = [],
+  onVariantSelect = () => {},
+  onVariantImageChange = () => {}
+}) {
   // If no variants, don't render anything
   if (!variants || variants.length === 0) {
     return null;
@@ -14,6 +19,10 @@ export default function ProductVariantsDisplay({ variants = [], onVariantSelect 
     setSelectedVariantId(variantId);
     const variant = variants.find(v => v.id === variantId);
     onVariantSelect(variant);
+    // Notify parent of image change if variant has image
+    if (variant?.image_url) {
+      onVariantImageChange(variant.image_url);
+    }
   };
 
   return (
@@ -24,20 +33,34 @@ export default function ProductVariantsDisplay({ variants = [], onVariantSelect 
           {variants.map((variant) => {
             const isInStock = variant.stock_quantity > 0;
             const isSelected = selectedVariantId === variant.id;
+            const hasImage = variant.image_url && variant.image_url.trim() !== '';
 
             return (
               <button
                 key={variant.id}
-                className={`variant-option ${isSelected ? 'active' : ''} ${!isInStock ? 'out-of-stock' : ''}`}
+                className={`variant-option ${isSelected ? 'active' : ''} ${!isInStock ? 'out-of-stock' : ''} ${hasImage ? 'has-image' : ''}`}
                 onClick={() => handleVariantSelect(variant.id)}
                 disabled={!isInStock}
                 aria-label={`${variant.variant_name} - ₹${variant.price}${!isInStock ? ' (Out of stock)' : ''}`}
                 aria-pressed={isSelected}
                 title={!isInStock ? 'Out of stock' : `${variant.variant_name} - ₹${variant.price}`}
               >
-                <div className="variant-name">{variant.variant_name}</div>
-                <div className="variant-price">₹{variant.price}</div>
-                {!isInStock && <div className="stock-badge">Out of Stock</div>}
+                {hasImage && (
+                  <div className="variant-image-thumbnail">
+                    <Image
+                      src={variant.image_url}
+                      alt={`${variant.variant_name} thumbnail`}
+                      width={60}
+                      height={60}
+                      className="thumbnail-img"
+                    />
+                  </div>
+                )}
+                <div className="variant-info">
+                  <div className="variant-name">{variant.variant_name}</div>
+                  <div className="variant-price">₹{variant.price}</div>
+                  {!isInStock && <div className="stock-badge">Out of Stock</div>}
+                </div>
               </button>
             );
           })}

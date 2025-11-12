@@ -20,6 +20,7 @@ export default function ProductFormSection({
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [draggedImageIndex, setDraggedImageIndex] = useState(null);
   const [autoGenerateSKU, setAutoGenerateSKU] = useState(false);
+  const [uploadingVariantIndex, setUploadingVariantIndex] = useState(null);
 
   const handleImageChange = async (e) => {
     const file = e.target.files?.[0];
@@ -72,6 +73,43 @@ export default function ProductFormSection({
       notify('Failed to upload image: ' + error.message, 'error');
     } finally {
       setIsUploadingImage(false);
+    }
+  };
+
+  const uploadVariantImage = async (file, variantIndex) => {
+    try {
+      setUploadingVariantIndex(variantIndex);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', 'product-variants');
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        notify(data.error || 'Failed to upload variant image', 'error');
+        return;
+      }
+
+      // Update the variant with the image URL
+      updateVariant(variantIndex, 'image_url', data.url);
+      notify('Variant image uploaded successfully!', 'success');
+    } catch (error) {
+      console.error('Variant upload error:', error);
+      notify('Failed to upload variant image: ' + error.message, 'error');
+    } finally {
+      setUploadingVariantIndex(null);
+    }
+  };
+
+  const handleVariantImageChange = async (e, variantIndex) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      await uploadVariantImage(file, variantIndex);
     }
   };
 
@@ -409,40 +447,74 @@ export default function ProductFormSection({
           </button>
         </div>
         {(productForm.variants || []).length > 0 ? (
-          <div style={{ display: 'grid', gap: '12px' }}>
+          <div style={{ display: 'grid', gap: '16px' }}>
             {productForm.variants.map((variant, idx) => (
-              <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr auto', gap: '8px', alignItems: 'end', padding: '12px', background: '#f9f9f9', borderRadius: '8px' }}>
-                <input
-                  type="text"
-                  placeholder="Variant name (e.g., Red, Large)"
-                  value={variant.variant_name}
-                  onChange={(e) => updateVariant(idx, 'variant_name', e.target.value)}
-                  style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-                />
-                <input
-                  type="number"
-                  placeholder="Price"
-                  value={variant.price}
-                  onChange={(e) => updateVariant(idx, 'price', e.target.value)}
-                  style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-                />
-                <input
-                  type="number"
-                  placeholder="Stock"
-                  value={variant.stock_quantity}
-                  onChange={(e) => updateVariant(idx, 'stock_quantity', e.target.value)}
-                  style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-                />
-                <input
-                  type="text"
-                  placeholder="SKU"
-                  value={variant.sku}
-                  onChange={(e) => updateVariant(idx, 'sku', e.target.value)}
-                  style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-                />
-                <button type="button" className="btn btn-danger btn-sm" onClick={() => removeVariant(idx)}>
-                  <X size={16} />
-                </button>
+              <div key={idx} style={{ padding: '16px', background: '#f9f9f9', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr auto', gap: '8px', marginBottom: '12px', alignItems: 'end' }}>
+                  <input
+                    type="text"
+                    placeholder="Variant name (e.g., Red, Large)"
+                    value={variant.variant_name}
+                    onChange={(e) => updateVariant(idx, 'variant_name', e.target.value)}
+                    style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Price"
+                    value={variant.price}
+                    onChange={(e) => updateVariant(idx, 'price', e.target.value)}
+                    style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Stock"
+                    value={variant.stock_quantity}
+                    onChange={(e) => updateVariant(idx, 'stock_quantity', e.target.value)}
+                    style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                  />
+                  <input
+                    type="text"
+                    placeholder="SKU"
+                    value={variant.sku}
+                    onChange={(e) => updateVariant(idx, 'sku', e.target.value)}
+                    style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                  />
+                  <button type="button" className="btn btn-danger btn-sm" onClick={() => removeVariant(idx)}>
+                    <X size={16} />
+                  </button>
+                </div>
+
+                {/* Variant Image Upload */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', alignItems: 'start' }}>
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#666', marginBottom: '4px', display: 'block' }}>Variant Image (Optional)</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleVariantImageChange(e, idx)}
+                      disabled={uploadingVariantIndex === idx}
+                      style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '4px', width: '100%' }}
+                    />
+                    {uploadingVariantIndex === idx && <p style={{ fontSize: '12px', color: '#0083B0', marginTop: '4px' }}>Uploading...</p>}
+                  </div>
+                  {variant.image_url && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <img
+                        src={variant.image_url}
+                        alt={`${variant.variant_name} preview`}
+                        style={{ width: '60px', height: '60px', borderRadius: '4px', objectFit: 'cover' }}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-danger btn-sm"
+                        onClick={() => updateVariant(idx, 'image_url', '')}
+                        title="Remove variant image"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>

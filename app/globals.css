@@ -1468,6 +1468,38 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
   min-height: 80px;
 }
 
+.variant-option.has-image {
+  flex-direction: row;
+  min-height: 100px;
+  padding: 8px;
+}
+
+.variant-image-thumbnail {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--cool-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thumbnail-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.variant-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  text-align: left;
+}
+
 .variant-option:hover:not(:disabled) {
   border-color: var(--deep-teal);
   background: var(--soft-teal);

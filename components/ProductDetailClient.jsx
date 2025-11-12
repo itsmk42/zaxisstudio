@@ -1,7 +1,6 @@
 "use client";
 import { useState } from 'react';
 import ProductGallery from './ProductGallery';
-import ProductVariants from './ProductVariants';
 import ProductVariantsDisplay from './ProductVariantsDisplay';
 import QuantitySelector from './QuantitySelector';
 import Accordion from './Accordion';
@@ -14,6 +13,7 @@ export default function ProductDetailClient({ product, relatedProducts = [] }) {
   const [selectedVariant, setSelectedVariant] = useState(
     product.variants && product.variants.length > 0 ? product.variants[0] : null
   );
+  const [variantImageUrl, setVariantImageUrl] = useState(null);
   const [showStickyCTA, setShowStickyCTA] = useState(false);
 
   // Handle scroll to show/hide sticky CTA
@@ -33,12 +33,17 @@ export default function ProductDetailClient({ product, relatedProducts = [] }) {
   const isStock = !product.image_url || /picsum\.photos/i.test(product.image_url);
   const productImage = isStock ? '/placeholder.svg' : product.image_url;
 
+  // If variant has an image, use it as the primary image
+  const primaryImage = variantImageUrl || productImage;
+
   // Get images from product.images array or fallback to single image_url
-  const productImages = product.images && product.images.length > 0
-    ? product.images
-        .sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
-        .map(img => isStock ? '/placeholder.svg' : img.image_url)
-    : [productImage];
+  const productImages = variantImageUrl
+    ? [variantImageUrl] // If variant has image, show only that
+    : (product.images && product.images.length > 0
+        ? product.images
+            .sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
+            .map(img => isStock ? '/placeholder.svg' : img.image_url)
+        : [productImage]);
 
   // Build specifications from product data
   const specifications = product.specifications && product.specifications.length > 0
@@ -151,13 +156,12 @@ export default function ProductDetailClient({ product, relatedProducts = [] }) {
           {/* Action block */}
           <div id="action-block" className="product-action-block">
             {/* Variants - Only show if product has variants from database */}
-            {product.variants && product.variants.length > 0 ? (
+            {product.variants && product.variants.length > 0 && (
               <ProductVariantsDisplay
                 variants={product.variants}
                 onVariantSelect={setSelectedVariant}
+                onVariantImageChange={setVariantImageUrl}
               />
-            ) : (
-              <ProductVariants onVariantChange={setSelectedVariant} />
             )}
 
             {/* Quantity selector */}
