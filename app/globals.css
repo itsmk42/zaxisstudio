@@ -927,13 +927,11 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
 }
 
 /* Responsive visibility for dark navbar */
-@media (min-width: 768px) {
-  .navbar-dark .nav-links { display: inline-flex; }
-  .navbar-dark .nav-toggle { display: none; }
-}
-@media (max-width: 767px) {
-  .navbar-dark .nav-toggle { display: inline-flex; }
-}
+/* Hide nav-links on all screen sizes - use hamburger menu instead */
+.navbar-dark .nav-links { display: none !important; }
+
+/* Show hamburger menu on all screen sizes */
+.navbar-dark .nav-toggle { display: inline-flex; }
 .on-accent { color: var(--text-strong); }
 
 /* Mobile Navigation Icons */
