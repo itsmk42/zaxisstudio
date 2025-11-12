@@ -2986,3 +2986,211 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
     width: 100%;
   }
 }
+
+/* Architecture Wireframe Section */
+.wireframe-section {
+  position: relative;
+  padding: 80px 0;
+  background: linear-gradient(135deg, rgba(20, 18, 17, 0.5) 0%, rgba(30, 25, 22, 0.3) 100%);
+  border-top: 1px solid rgba(0, 217, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 217, 255, 0.1);
+  overflow: hidden;
+}
+
+.wireframe-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(0deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wireframe-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.wireframe-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.wireframe-text {
+  display: grid;
+  gap: 24px;
+}
+
+.wireframe-heading {
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 700;
+  color: var(--text-strong);
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.wireframe-subheading {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--deep-teal);
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.wireframe-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 24px;
+  background: rgba(232, 245, 233, 0.08);
+  border: 1px solid rgba(0, 217, 255, 0.15);
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+}
+
+.feature-item {
+  display: grid;
+  gap: 8px;
+}
+
+.feature-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--deep-teal);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.feature-description {
+  font-size: 13px;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.wireframe-description {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text-primary);
+  margin: 0;
+  padding: 20px;
+  background: rgba(100, 255, 200, 0.05);
+  border-left: 3px solid var(--deep-teal);
+  border-radius: 8px;
+}
+
+.wireframe-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, var(--deep-teal), #00d9ff);
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 12px;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  box-shadow: 0 8px 24px rgba(0, 217, 255, 0.2);
+  letter-spacing: 0.025em;
+}
+
+.wireframe-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 217, 255, 0.3);
+}
+
+.wireframe-cta:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(0, 217, 255, 0.2);
+}
+
+.wireframe-visual {
+  position: relative;
+  height: 500px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(20, 18, 17, 0.8) 0%, rgba(30, 25, 22, 0.9) 100%);
+  border: 1px solid rgba(0, 217, 255, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.wireframe-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Responsive Wireframe Section */
+@media (max-width: 1024px) {
+  .wireframe-section {
+    padding: 60px 0;
+  }
+
+  .wireframe-content {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .wireframe-visual {
+    height: 400px;
+  }
+
+  .wireframe-features {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .wireframe-section {
+    padding: 40px 0;
+  }
+
+  .wireframe-heading {
+    font-size: 24px;
+  }
+
+  .wireframe-subheading {
+    font-size: 14px;
+  }
+
+  .wireframe-visual {
+    height: 300px;
+  }
+
+  .wireframe-features {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .feature-title {
+    font-size: 13px;
+  }
+
+  .feature-description {
+    font-size: 12px;
+  }
+
+  .wireframe-description {
+    font-size: 14px;
+    padding: 16px;
+  }
+
+  .wireframe-cta {
+    padding: 12px 24px;
+    font-size: 13px;
+  }
+}
