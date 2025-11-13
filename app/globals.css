@@ -3566,3 +3566,354 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
     font-size: 20px;
   }
 }
+
+/* Carousel Edit Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: white;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--text-strong);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: var(--accent-blue);
+  color: var(--primary);
+}
+
+.modal-form {
+  padding: 24px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.modal-actions .btn {
+  flex: 1;
+  min-width: 120px;
+}
+
+.modal-actions .btn-danger {
+  margin-left: auto;
+}
+
+/* Homepage Management Section Styles */
+.homepage-management {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.management-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(15, 107, 127, 0.05), rgba(0, 183, 219, 0.05));
+}
+
+.management-header h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  color: var(--text-strong);
+}
+
+.management-header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.management-sections {
+  padding: 24px;
+}
+
+.collapsible-section {
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.collapsible-section:hover {
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(15, 107, 127, 0.1);
+}
+
+.collapsible-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #F5F7FA 0%, #F9FAFB 100%);
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-strong);
+  transition: all 0.2s ease;
+}
+
+.collapsible-header:hover {
+  background: linear-gradient(135deg, #EEF2F7 0%, #F2F5FA 100%);
+}
+
+.section-icon {
+  font-size: 20px;
+}
+
+.section-title {
+  flex: 1;
+  text-align: left;
+}
+
+.section-toggle {
+  font-size: 12px;
+  color: var(--muted);
+  transition: transform 0.2s ease;
+}
+
+.collapsible-content {
+  padding: 24px;
+  background: white;
+  border-top: 1px solid var(--border);
+  animation: expandDown 0.3s ease;
+}
+
+@keyframes expandDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+  }
+}
+
+.section-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section-description {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+  padding: 12px;
+  background: var(--accent-blue);
+  border-radius: 6px;
+  border-left: 3px solid var(--primary);
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.product-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.product-checkbox:hover {
+  border-color: var(--primary);
+  background: var(--accent-blue);
+}
+
+.product-checkbox input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.product-checkbox input[type="checkbox"]:checked + span {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.algorithm-settings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  background: var(--accent-blue);
+  border-radius: 8px;
+}
+
+.date-range {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.date-range > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.date-range label {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-strong);
+}
+
+.date-range input[type="date"] {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.ab-test-info {
+  padding: 16px;
+  background: linear-gradient(135deg, #E0F7F6 0%, #E3F2FD 100%);
+  border-left: 3px solid var(--primary);
+  border-radius: 6px;
+  color: var(--text-strong);
+  font-size: 14px;
+}
+
+.management-footer {
+  padding: 24px;
+  border-top: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(15, 107, 127, 0.02), rgba(0, 183, 219, 0.02));
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.management-footer .btn {
+  min-width: 200px;
+}
+
+.save-info {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  flex: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modal-content {
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+
+  .modal-header {
+    padding: 16px;
+  }
+
+  .modal-form {
+    padding: 16px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-actions .btn {
+    width: 100%;
+  }
+
+  .modal-actions .btn-danger {
+    margin-left: 0;
+  }
+
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .date-range {
+    grid-template-columns: 1fr;
+  }
+
+  .management-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .management-footer .btn {
+    width: 100%;
+  }
+
+  .save-info {
+    text-align: center;
+  }
+}

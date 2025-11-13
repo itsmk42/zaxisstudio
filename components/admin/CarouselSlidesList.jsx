@@ -3,10 +3,13 @@
 import { useState } from 'react';
 import { notify } from './Toast';
 import ConfirmDialog from './ConfirmDialog';
+import CarouselEditModal from './CarouselEditModal';
 
 export default function CarouselSlidesList({ slides = [], onUpdate }) {
   const [confirmDelete, setConfirmDelete] = useState({ open: false, id: null, title: '' });
   const [isDeleting, setIsDeleting] = useState(false);
+  const [editingSlide, setEditingSlide] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const handleDelete = async (id) => {
     setIsDeleting(true);
@@ -86,6 +89,16 @@ export default function CarouselSlidesList({ slides = [], onUpdate }) {
             <div className="slide-actions">
               <button
                 className="btn btn-sm btn-secondary"
+                onClick={() => {
+                  setEditingSlide(slide);
+                  setIsEditModalOpen(true);
+                }}
+                title="Edit slide"
+              >
+                ✎ Edit
+              </button>
+              <button
+                className="btn btn-sm btn-secondary"
                 onClick={() => handleReorder(slide.id, 'up')}
                 disabled={index === 0}
                 title="Move up"
@@ -100,25 +113,23 @@ export default function CarouselSlidesList({ slides = [], onUpdate }) {
               >
                 ↓
               </button>
-              <button
-                className="btn btn-sm btn-danger"
-                onClick={() => setConfirmDelete({ open: true, id: slide.id, title: slide.title })}
-              >
-                Delete
-              </button>
             </div>
           </div>
         ))}
       </div>
 
-      <ConfirmDialog
-        open={confirmDelete.open}
-        title="Delete Carousel Slide"
-        message={`Are you sure you want to delete "${confirmDelete.title}"? This cannot be undone.`}
-        confirmText="Delete"
-        cancelText="Cancel"
-        onConfirm={() => handleDelete(confirmDelete.id)}
-        onCancel={() => setConfirmDelete({ open: false, id: null, title: '' })}
+      <CarouselEditModal
+        slide={editingSlide}
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingSlide(null);
+        }}
+        onUpdate={() => {
+          onUpdate?.();
+          setIsEditModalOpen(false);
+          setEditingSlide(null);
+        }}
       />
     </>
   );

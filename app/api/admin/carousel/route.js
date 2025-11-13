@@ -88,7 +88,7 @@ export async function PATCH(request) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     const body = await request.json();
-    const { direction } = body;
+    const { direction, title, price, image_url, button_link, display_order } = body;
 
     if (!id) {
       return Response.json(
@@ -97,43 +97,68 @@ export async function PATCH(request) {
       );
     }
 
-    // Get all slides
-    const slides = await listCarouselSlides();
-    const currentSlide = slides.find(s => s.id === id);
+    // If direction is provided, handle reordering
+    if (direction) {
+      // Get all slides
+      const slides = await listCarouselSlides();
+      const currentSlide = slides.find(s => s.id === id);
 
-    if (!currentSlide) {
-      return Response.json(
-        { error: 'Slide not found' },
-        { status: 404 }
-      );
+      if (!currentSlide) {
+        return Response.json(
+          { error: 'Slide not found' },
+          { status: 404 }
+        );
+      }
+
+      // Find adjacent slide
+      const currentIndex = slides.findIndex(s => s.id === id);
+      let targetIndex;
+
+      if (direction === 'up' && currentIndex > 0) {
+        targetIndex = currentIndex - 1;
+      } else if (direction === 'down' && currentIndex < slides.length - 1) {
+        targetIndex = currentIndex + 1;
+      } else {
+        return Response.json(
+          { error: 'Cannot move in that direction' },
+          { status: 400 }
+        );
+      }
+
+      const targetSlide = slides[targetIndex];
+
+      // Swap display_order values
+      const tempOrder = currentSlide.display_order;
+      await updateCarouselSlide(id, { display_order: targetSlide.display_order });
+      await updateCarouselSlide(targetSlide.id, { display_order: tempOrder });
+
+      revalidatePath('/');
+      revalidatePath('/admin/carousel');
+
+      return Response.json({ success: true });
     }
 
-    // Find adjacent slide
-    const currentIndex = slides.findIndex(s => s.id === id);
-    let targetIndex;
+    // Otherwise, handle slide update
+    const updates = {};
+    if (title !== undefined) updates.title = title;
+    if (price !== undefined) updates.price = price;
+    if (image_url !== undefined) updates.image_url = image_url;
+    if (button_link !== undefined) updates.button_link = button_link;
+    if (display_order !== undefined) updates.display_order = display_order;
 
-    if (direction === 'up' && currentIndex > 0) {
-      targetIndex = currentIndex - 1;
-    } else if (direction === 'down' && currentIndex < slides.length - 1) {
-      targetIndex = currentIndex + 1;
-    } else {
+    if (Object.keys(updates).length === 0) {
       return Response.json(
-        { error: 'Cannot move in that direction' },
+        { error: 'No fields to update' },
         { status: 400 }
       );
     }
 
-    const targetSlide = slides[targetIndex];
-
-    // Swap display_order values
-    const tempOrder = currentSlide.display_order;
-    await updateCarouselSlide(id, { display_order: targetSlide.display_order });
-    await updateCarouselSlide(targetSlide.id, { display_order: tempOrder });
+    const updatedSlide = await updateCarouselSlide(id, updates);
 
     revalidatePath('/');
     revalidatePath('/admin/carousel');
 
-    return Response.json({ success: true });
+    return Response.json(updatedSlide, { status: 200 });
   } catch (error) {
     console.error('Carousel API error:', error);
     return Response.json(

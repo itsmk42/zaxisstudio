@@ -6,6 +6,7 @@ import CarouselFormSection from "./CarouselFormSection";
 import CarouselSlidesList from "./CarouselSlidesList";
 import ProductFormSection from "./ProductFormSection";
 import OrderManagementSection from "./OrderManagementSection";
+import HomepageManagementSection from "./HomepageManagementSection";
 import { supabaseBrowser } from "../../lib/supabaseClient";
 
 function Toolbar({ children }) {
@@ -550,95 +551,12 @@ export default function AdminDashboardClient() {
       {/* Homepage Customization */}
       {tab === "homepage" && (
         <section className="admin-panel" role="tabpanel">
-          <Toolbar>
-            <button className="btn primary" onClick={saveHomeConfig}>Save Config</button>
-          </Toolbar>
-          <div className="grid two">
-            <div>
-              <h3>Banner Management</h3>
-              <label className="col-span">
-                Upload Banners
-                <input type="file" multiple accept="image/*" onChange={(e) => setHomeConfig({ ...homeConfig, banners: Array.from(e.target.files || []) })} />
-              </label>
-              <div className="grid three" style={{ marginTop: 12 }}>
-                {homeConfig.banners.map((file, i) => (
-                  <img key={i} src={URL.createObjectURL(file)} alt={`Banner ${i + 1}`} style={{ width: "100%", borderRadius: 8 }} />
-                ))}
-              </div>
-              <label>
-                Display Duration (days)
-                <input type="number" min={0} onChange={(e) => setHomeConfig({ ...homeConfig, durationDays: Number(e.target.value) })} />
-              </label>
-              <label>
-                Priority
-                <input type="number" min={0} onChange={(e) => setHomeConfig({ ...homeConfig, priority: Number(e.target.value) })} />
-              </label>
-              <label className="inline">
-                <input type="checkbox" checked={homeConfig.abTest.enabled} onChange={(e) => setHomeConfig({ ...homeConfig, abTest: { ...homeConfig.abTest, enabled: e.target.checked } })} />
-                <span>Enable A/B Testing</span>
-              </label>
-            </div>
-            <div>
-              <h3>Featured Products</h3>
-              <label className="inline">
-                <span>Mode</span>
-                <select value={homeConfig.featuredMode} onChange={(e) => setHomeConfig({ ...homeConfig, featuredMode: e.target.value })}>
-                  <option value="manual">Manual</option>
-                  <option value="algorithm">Algorithm</option>
-                </select>
-              </label>
-              {homeConfig.featuredMode === "manual" ? (
-                <div>
-                  <p>Select products to feature:</p>
-                  <div className="grid three">
-                    {products.map((p) => (
-                      <label key={p.id} className="card">
-                        <input
-                          type="checkbox"
-                          checked={homeConfig.featuredManualIds.includes(p.id)}
-                          onChange={(e) => {
-                            const checked = e.target.checked;
-                            setHomeConfig((cfg) => ({
-                              ...cfg,
-                              featuredManualIds: checked
-                                ? Array.from(new Set([...cfg.featuredManualIds, p.id]))
-                                : cfg.featuredManualIds.filter((id) => id !== p.id)
-                            }));
-                          }}
-                        />
-                        <span style={{ marginLeft: 8 }}>{p.title}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <p>Algorithm criteria:</p>
-                  <label>
-                    Min Price
-                    <input type="number" value={homeConfig.algorithm.minPrice} onChange={(e) => setHomeConfig({ ...homeConfig, algorithm: { ...homeConfig.algorithm, minPrice: Number(e.target.value) } })} />
-                  </label>
-                  <label>
-                    Limit
-                    <input type="number" value={homeConfig.algorithm.limit} onChange={(e) => setHomeConfig({ ...homeConfig, algorithm: { ...homeConfig.algorithm, limit: Number(e.target.value) } })} />
-                  </label>
-                  <label>
-                    Required Tags (comma-separated)
-                    <input value={homeConfig.algorithm.tagIncludes.join(",")} onChange={(e) => setHomeConfig({ ...homeConfig, algorithm: { ...homeConfig.algorithm, tagIncludes: e.target.value.split(",").map((t) => t.trim()).filter(Boolean) } })} />
-                  </label>
-                </div>
-              )}
-              <h3>Schedule Visibility</h3>
-              <label>
-                Start
-                <input type="date" value={homeConfig.schedule.start} onChange={(e) => setHomeConfig({ ...homeConfig, schedule: { ...homeConfig.schedule, start: e.target.value } })} />
-              </label>
-              <label>
-                End
-                <input type="date" value={homeConfig.schedule.end} onChange={(e) => setHomeConfig({ ...homeConfig, schedule: { ...homeConfig.schedule, end: e.target.value } })} />
-              </label>
-            </div>
-          </div>
+          <HomepageManagementSection
+            homeConfig={homeConfig}
+            setHomeConfig={setHomeConfig}
+            products={products}
+            onSave={saveHomeConfig}
+          />
         </section>
       )}
 
