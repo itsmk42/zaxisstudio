@@ -14,6 +14,22 @@ const PRICES = {
   pet_tag: 399
 };
 
+const FONT_STYLES = {
+  arial: { name: 'Arial', family: 'Arial, sans-serif' },
+  georgia: { name: 'Georgia', family: 'Georgia, serif' },
+  courier: { name: 'Courier New', family: '"Courier New", monospace' },
+  comic: { name: 'Comic Sans', family: '"Comic Sans MS", cursive' },
+  brush: { name: 'Brush Script', family: '"Brush Script MT", cursive' },
+  impact: { name: 'Impact', family: 'Impact, sans-serif' },
+  verdana: { name: 'Verdana', family: 'Verdana, sans-serif' },
+  times: { name: 'Times New Roman', family: '"Times New Roman", serif' }
+};
+
+const PET_TAG_SHAPES = {
+  BONE: 'bone',
+  CIRCLE: 'circle'
+};
+
 export default function CustomKeychainBuilder() {
   const [selectedType, setSelectedType] = useState(KEYCHAIN_TYPES.NAME);
   const [nameInput, setNameInput] = useState('');
@@ -21,6 +37,8 @@ export default function CustomKeychainBuilder() {
   const [petName, setPetName] = useState('');
   const [petPhone, setPetPhone] = useState('');
   const [color, setColor] = useState('Black');
+  const [selectedFont, setSelectedFont] = useState('arial');
+  const [selectedPetShape, setSelectedPetShape] = useState(PET_TAG_SHAPES.BONE);
   const [addedToCart, setAddedToCart] = useState(false);
   const [error, setError] = useState('');
 
@@ -81,9 +99,9 @@ export default function CustomKeychainBuilder() {
     const customData = {
       type: selectedType,
       color,
-      ...(selectedType === KEYCHAIN_TYPES.NAME && { name: nameInput }),
+      ...(selectedType === KEYCHAIN_TYPES.NAME && { name: nameInput, font: selectedFont }),
       ...(selectedType === KEYCHAIN_TYPES.NUMBER_PLATE && { plate: plateInput }),
-      ...(selectedType === KEYCHAIN_TYPES.PET_TAG && { petName, petPhone })
+      ...(selectedType === KEYCHAIN_TYPES.PET_TAG && { petName, petPhone, shape: selectedPetShape })
     };
 
     const product = {
@@ -167,21 +185,37 @@ export default function CustomKeychainBuilder() {
 
           {/* Name Keychain Input */}
           {selectedType === KEYCHAIN_TYPES.NAME && (
-            <div className="form-group">
-              <label htmlFor="name-input">Enter Name</label>
-              <input
-                id="name-input"
-                type="text"
-                value={nameInput}
-                onChange={(e) => setNameInput(e.target.value.slice(0, MAX_NAME_CHARS))}
-                placeholder="e.g., Sarah"
-                className="form-input"
-                maxLength={MAX_NAME_CHARS}
-              />
-              <div className="char-counter">
-                {nameInput.length} / {MAX_NAME_CHARS} characters
+            <>
+              <div className="form-group">
+                <label htmlFor="name-input">Enter Name</label>
+                <input
+                  id="name-input"
+                  type="text"
+                  value={nameInput}
+                  onChange={(e) => setNameInput(e.target.value.slice(0, MAX_NAME_CHARS))}
+                  placeholder="e.g., Sarah"
+                  className="form-input"
+                  maxLength={MAX_NAME_CHARS}
+                />
+                <div className="char-counter">
+                  {nameInput.length} / {MAX_NAME_CHARS} characters
+                </div>
               </div>
-            </div>
+
+              <div className="form-group">
+                <label htmlFor="font-select">Font Style</label>
+                <select
+                  id="font-select"
+                  value={selectedFont}
+                  onChange={(e) => setSelectedFont(e.target.value)}
+                  className="form-input"
+                >
+                  {Object.entries(FONT_STYLES).map(([key, { name }]) => (
+                    <option key={key} value={key}>{name}</option>
+                  ))}
+                </select>
+              </div>
+            </>
           )}
 
           {/* Number Plate Input */}
@@ -206,6 +240,26 @@ export default function CustomKeychainBuilder() {
           {/* Pet Tag Inputs */}
           {selectedType === KEYCHAIN_TYPES.PET_TAG && (
             <>
+              <div className="form-group">
+                <label>Tag Shape</label>
+                <div className="shape-selector">
+                  <button
+                    className={`shape-option ${selectedPetShape === PET_TAG_SHAPES.BONE ? 'active' : ''}`}
+                    onClick={() => setSelectedPetShape(PET_TAG_SHAPES.BONE)}
+                    title="Bone-shaped tag"
+                  >
+                    🦴 Bone
+                  </button>
+                  <button
+                    className={`shape-option ${selectedPetShape === PET_TAG_SHAPES.CIRCLE ? 'active' : ''}`}
+                    onClick={() => setSelectedPetShape(PET_TAG_SHAPES.CIRCLE)}
+                    title="Circular tag"
+                  >
+                    ⭕ Circle
+                  </button>
+                </div>
+              </div>
+
               <div className="form-group">
                 <label htmlFor="pet-name-input">Pet Name</label>
                 <input
@@ -249,24 +303,55 @@ export default function CustomKeychainBuilder() {
           <h2>Preview</h2>
           <div className="preview-box">
             {selectedType === KEYCHAIN_TYPES.NAME && (
-              <div className="preview-name">
-                <div className="preview-text">{nameInput || 'Your Name'}</div>
-                <div className="preview-color">{color}</div>
+              <div className="preview-name-container">
+                <div
+                  className="preview-name-keychain"
+                  style={{ fontFamily: FONT_STYLES[selectedFont].family }}
+                >
+                  <div className="keychain-text">{nameInput || 'Your Name'}</div>
+                </div>
+                <div className="preview-info">
+                  <span className="info-label">Font:</span> {FONT_STYLES[selectedFont].name}
+                  <br />
+                  <span className="info-label">Color:</span> {color}
+                </div>
               </div>
             )}
 
             {selectedType === KEYCHAIN_TYPES.NUMBER_PLATE && (
-              <div className="preview-plate">
-                <div className="plate-text">{plateInput.toUpperCase() || 'AB-12-CD-1234'}</div>
+              <div className="preview-number-plate-container">
+                <div className="indian-number-plate">
+                  <div className="plate-header">
+                    <div className="plate-ind">IND</div>
+                    <div className="plate-state">KA</div>
+                  </div>
+                  <div className="plate-number">
+                    {plateInput.toUpperCase() || 'AB 1234'}
+                  </div>
+                </div>
               </div>
             )}
 
             {selectedType === KEYCHAIN_TYPES.PET_TAG && (
-              <div className="preview-pet-tag">
-                <div className="pet-tag-circle">
-                  <div className="pet-tag-text">{petName || 'Pet'}</div>
-                  {petPhone && <div className="pet-tag-phone">{petPhone}</div>}
-                </div>
+              <div className="preview-pet-tag-container">
+                {selectedPetShape === PET_TAG_SHAPES.BONE ? (
+                  <div className="pet-tag-bone">
+                    <div className="bone-left-circle"></div>
+                    <div className="bone-center"></div>
+                    <div className="bone-right-circle"></div>
+                    <div className="pet-tag-content">
+                      <div className="pet-tag-name">{petName || 'Pet Name'}</div>
+                      {petPhone && <div className="pet-tag-phone">{petPhone}</div>}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="pet-tag-circle">
+                    <div className="pet-tag-content">
+                      <div className="pet-tag-name">{petName || 'Pet Name'}</div>
+                      {petPhone && <div className="pet-tag-phone">{petPhone}</div>}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
