@@ -80,6 +80,7 @@ export default function Navbar() {
           <div className="nav-links" id="primary-navigation" aria-hidden={open ? 'true' : 'false'}>
             <Link className="nav-link" href="/">Home</Link>
             <Link className="nav-link" href="/products">Products</Link>
+            <Link className="nav-link" href="/custom-keychain">Custom Keychain</Link>
             <Link className="nav-link" href="/custom">Custom Orders</Link>
             <Link className="nav-link" href="/cart">Cart</Link>
             <Link className="nav-link" href="/login" aria-label="Login">Login</Link>

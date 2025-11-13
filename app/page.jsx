@@ -14,10 +14,10 @@ export default async function HomePage() {
   const featuredItems = [
     {
       title: "Custom Keychains",
-      description: "Personalized 3D printed keychains with your custom design",
+      description: "Design your own personalized 3D printed keychains with custom text, number plates, or pet tags",
       image: "/placeholder.svg",
-      buttonText: "Learn More",
-      buttonHref: "/products?category=keychains"
+      buttonText: "Design Now",
+      buttonHref: "/custom-keychain"
     },
     {
       title: "Custom Photobox",
