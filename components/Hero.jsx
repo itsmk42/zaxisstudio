@@ -93,7 +93,7 @@ export default function Hero({ slides = [] }) {
                       <div className="overlay-actions">
                         <a
                           className="btn shop-now"
-                          href="/products"
+                          href={slide.button_link || '/products'}
                           aria-label="Shop now"
                         >
                           Shop Now
