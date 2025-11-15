@@ -419,6 +419,26 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
   max-width: 600px;
 }
 
+/* Mobile carousel overlay - position at top-left with semi-transparent background */
+@media (max-width: 768px) {
+  .carousel-overlay {
+    background: transparent;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 12px;
+  }
+
+  .overlay-content {
+    text-align: left;
+    width: auto;
+    max-width: none;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 12px;
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
+  }
+}
+
 .overlay-title {
   margin: 0 0 8px;
   font-size: clamp(18px, 4vw, 32px);
@@ -433,6 +453,21 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
   font-weight: 700;
   color: #00D9FF;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Mobile title and price styling */
+@media (max-width: 768px) {
+  .overlay-title {
+    font-size: clamp(16px, 3.5vw, 20px);
+    margin: 0 0 6px;
+    text-shadow: none;
+  }
+
+  .overlay-price {
+    font-size: clamp(14px, 2.5vw, 18px);
+    margin: 0 0 12px;
+    text-shadow: none;
+  }
 }
 
 .overlay-actions {
@@ -470,6 +505,20 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
 .overlay-actions .shop-now:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .overlay-actions {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .overlay-actions .btn {
+    padding: 10px 16px;
+    font-size: 13px;
+    width: 100%;
+  }
 }
 
 @media (max-width: 600px) {
