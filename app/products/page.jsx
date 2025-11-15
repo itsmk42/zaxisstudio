@@ -14,7 +14,7 @@ export default async function ProductsPage() {
   return (
     <section>
       <h1 className="page-title">Products</h1>
-      <ProductsGrid products={products} />
+      <ProductsGrid products={products} showCustomLithophane={true} />
     </section>
   );
 }
