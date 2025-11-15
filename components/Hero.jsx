@@ -7,6 +7,29 @@ export default function Hero({ slides = [] }) {
   const heroSlides = slides.length > 0 ? slides : [];
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
+  const [displayedText, setDisplayedText] = useState('');
+
+  // Typewriter animation effect
+  useEffect(() => {
+    const currentTitle = heroSlides[currentSlide]?.title || '';
+    let charIndex = 0;
+    let timeoutId;
+
+    const typeCharacter = () => {
+      if (charIndex <= currentTitle.length) {
+        setDisplayedText(currentTitle.substring(0, charIndex));
+        charIndex++;
+        timeoutId = setTimeout(typeCharacter, 50); // 50ms per character
+      }
+    };
+
+    // Reset and start typing
+    setDisplayedText('');
+    charIndex = 0;
+    typeCharacter();
+
+    return () => clearTimeout(timeoutId);
+  }, [currentSlide, heroSlides]);
 
   // Auto-rotation effect
   useEffect(() => {
@@ -88,15 +111,19 @@ export default function Hero({ slides = [] }) {
                   {/* Slide overlay */}
                   <div className="carousel-overlay">
                     <div className="overlay-content">
-                      <h2 className="overlay-title">{slide.title}</h2>
+                      <h2 className="overlay-title" data-typewriter={index === currentSlide ? 'active' : ''}>
+                        {index === currentSlide ? displayedText : slide.title}
+                        {index === currentSlide && <span className="typewriter-cursor">|</span>}
+                      </h2>
                       <p className="overlay-price">{slide.price}</p>
                       <div className="overlay-actions">
                         <a
-                          className="btn shop-now"
+                          className="shop-now-link"
                           href={slide.button_link || '/products'}
                           aria-label="Shop now"
                         >
-                          Shop Now
+                          <span>Shop Now</span>
+                          <span className="arrow-icon">→</span>
                         </a>
                       </div>
                     </div>

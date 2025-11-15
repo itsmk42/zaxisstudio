@@ -1,3 +1,6 @@
+/* Import elegant serif font for carousel */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap');
+
 /* Modern Teal & Blue Theme Variables */
 :root {
   /* Primary backgrounds */
@@ -419,23 +422,25 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
   max-width: 600px;
 }
 
-/* Mobile carousel overlay - position at top-left with semi-transparent background */
+/* Mobile carousel overlay - elegant vignette effect */
 @media (max-width: 768px) {
   .carousel-overlay {
-    background: transparent;
+    background: radial-gradient(ellipse at top left, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6) 60%, rgba(0, 0, 0, 0.8));
     align-items: flex-start;
     justify-content: flex-start;
-    padding: 12px;
+    padding: 16px;
   }
 
   .overlay-content {
     text-align: left;
     width: auto;
     max-width: none;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 12px;
-    border-radius: 8px;
-    backdrop-filter: blur(4px);
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    backdrop-filter: none;
+    position: relative;
+    height: 100%;
   }
 }
 
@@ -445,6 +450,14 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
   font-weight: 600;
   color: #fff;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 0.5px;
+}
+
+.typewriter-cursor {
+  display: inline-block;
+  animation: blink-cursor 1s infinite;
+  margin-left: 2px;
 }
 
 .overlay-price {
@@ -458,15 +471,21 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
 /* Mobile title and price styling */
 @media (max-width: 768px) {
   .overlay-title {
-    font-size: clamp(16px, 3.5vw, 20px);
-    margin: 0 0 6px;
-    text-shadow: none;
+    font-size: clamp(18px, 5vw, 24px);
+    margin: 0 0 8px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  .typewriter-cursor {
+    font-size: 0.9em;
   }
 
   .overlay-price {
     font-size: clamp(14px, 2.5vw, 18px);
-    margin: 0 0 12px;
-    text-shadow: none;
+    margin: 0 0 16px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -507,17 +526,63 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
   outline-offset: 2px;
 }
 
+/* Mobile Shop Now text link styling */
+.shop-now-link {
+  background: transparent;
+  color: #fff;
+  border: none;
+  border-radius: 0;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+}
+
+.shop-now-link span {
+  display: inline;
+}
+
+.arrow-icon {
+  display: inline-block;
+  transition: transform 0.3s ease;
+  font-size: 16px;
+}
+
+.shop-now-link:hover .arrow-icon {
+  transform: translateX(4px);
+}
+
+.shop-now-link:focus-visible {
+  outline: 2px solid #00D9FF;
+  outline-offset: 2px;
+}
+
 @media (max-width: 768px) {
   .overlay-actions {
-    flex-direction: column;
-    gap: 8px;
-    width: 100%;
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: row;
+    gap: 0;
+    width: auto;
+    justify-content: center;
   }
 
   .overlay-actions .btn {
     padding: 10px 16px;
     font-size: 13px;
-    width: 100%;
+    width: auto;
+  }
+
+  .shop-now-link {
+    font-size: 13px;
   }
 }
 
@@ -649,6 +714,13 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
 /* Hero animations removed - no longer needed for static cards */
 
 @keyframes bg-scan { from { background-position: 0 0, 0 0, 0 0; } to { background-position: 100px 40px, -120px -80px, 0 40px; } }
+
+/* Typewriter cursor blinking animation */
+@keyframes blink-cursor {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) { .hero-bg { animation: none; } .card, .btn, .hero-card { transition: none; } }
 
 /* Footer enhancements */
