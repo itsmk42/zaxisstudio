@@ -4119,3 +4119,495 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
     text-align: center;
   }
 }
+
+/* Custom Lithophane Builder Styles */
+
+.custom-lithophane-builder {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.custom-lithophane-builder .builder-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.custom-lithophane-builder .builder-header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--text-strong);
+}
+
+.custom-lithophane-builder .builder-header p {
+  font-size: 16px;
+  color: var(--muted);
+}
+
+/* Lithophane Type Selector */
+.lithophane-types {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.lithophane-types .type-card {
+  padding: 24px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.lithophane-types .type-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.lithophane-types .type-card.active {
+  border-color: var(--primary);
+  background: rgba(74, 144, 226, 0.05);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+}
+
+.lithophane-types .type-icon {
+  font-size: 32px;
+}
+
+.lithophane-types .type-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.lithophane-types .type-size {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Builder Content */
+.custom-lithophane-builder .builder-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.custom-lithophane-builder .form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.custom-lithophane-builder .form-section h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+/* Image Upload */
+.image-upload-area {
+  position: relative;
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(74, 144, 226, 0.02);
+}
+
+.image-upload-area:hover {
+  border-color: var(--primary);
+  background: rgba(74, 144, 226, 0.05);
+}
+
+.file-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.upload-icon {
+  font-size: 48px;
+}
+
+.upload-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-strong);
+}
+
+.upload-hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Lithophane Info */
+.lithophane-info {
+  background: rgba(74, 144, 226, 0.05);
+  border-left: 4px solid var(--primary);
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.lithophane-info h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-strong);
+  margin-bottom: 12px;
+}
+
+.lithophane-info ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lithophane-info li {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* Preview Section */
+.custom-lithophane-builder .preview-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.custom-lithophane-builder .preview-section h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.custom-lithophane-builder .preview-box {
+  min-height: 400px;
+  padding: 24px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Keychain Lithophane Preview */
+.preview-keychain-lithophane-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.keychain-lithophane-preview {
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 3 / 4;
+  background: white;
+  border: 3px solid #000;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.keychain-lithophane-preview::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  right: 20px;
+  width: 16px;
+  height: 16px;
+  background: #999;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.keychain-lithophane-preview .lithophane-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.keychain-lithophane-preview .lithophane-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.keychain-lithophane-preview .lithophane-placeholder span:first-child {
+  font-size: 48px;
+}
+
+/* Light Lithophane Preview */
+.preview-light-lithophane-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.light-lithophane-preview {
+  width: 100%;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.lithophane-frame {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+  border: 4px solid #333;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.2),
+    inset 0 0 20px rgba(255, 255, 255, 0.3);
+  position: relative;
+}
+
+.lithophane-frame::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.lithophane-frame .lithophane-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: relative;
+  z-index: 1;
+}
+
+.lithophane-frame .lithophane-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.lithophane-frame .lithophane-placeholder span:first-child {
+  font-size: 48px;
+}
+
+.lithophane-stand {
+  width: 80%;
+  height: 20px;
+  background: linear-gradient(to bottom, #333, #1a1a1a);
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.lithophane-stand::before {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 8px;
+  background: #1a1a1a;
+  border-radius: 0 0 4px 4px;
+}
+
+/* Grayscale Effect */
+.grayscale {
+  filter: grayscale(100%) contrast(1.1);
+}
+
+/* Purchase Section */
+.custom-lithophane-builder .purchase-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.price-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 18px;
+}
+
+.price-label {
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.price-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .custom-lithophane-builder .builder-content {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .lithophane-types {
+    grid-template-columns: 1fr;
+  }
+
+  .custom-lithophane-builder .builder-header h1 {
+    font-size: 28px;
+  }
+
+  .keychain-lithophane-preview {
+    max-width: 250px;
+  }
+
+  .light-lithophane-preview {
+    max-width: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  .custom-lithophane-builder {
+    padding: 24px 16px;
+  }
+
+  .custom-lithophane-builder .builder-header h1 {
+    font-size: 24px;
+  }
+
+  .custom-lithophane-builder .builder-header p {
+    font-size: 14px;
+  }
+
+  .lithophane-types {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .lithophane-types .type-card {
+    padding: 16px;
+  }
+
+  .lithophane-types .type-icon {
+    font-size: 24px;
+  }
+
+  .lithophane-types .type-label {
+    font-size: 14px;
+  }
+
+  .lithophane-types .type-size {
+    font-size: 11px;
+  }
+
+  .custom-lithophane-builder .builder-content {
+    gap: 20px;
+  }
+
+  .custom-lithophane-builder .form-section h2,
+  .custom-lithophane-builder .preview-section h2 {
+    font-size: 18px;
+  }
+
+  .image-upload-area {
+    padding: 24px 16px;
+  }
+
+  .upload-icon {
+    font-size: 36px;
+  }
+
+  .upload-text {
+    font-size: 14px;
+  }
+
+  .upload-hint {
+    font-size: 11px;
+  }
+
+  .custom-lithophane-builder .preview-box {
+    min-height: 300px;
+    padding: 16px;
+  }
+
+  .keychain-lithophane-preview {
+    max-width: 200px;
+  }
+
+  .light-lithophane-preview {
+    max-width: 180px;
+  }
+
+  .lithophane-info {
+    padding: 16px;
+  }
+
+  .lithophane-info h3 {
+    font-size: 13px;
+  }
+
+  .lithophane-info li {
+    font-size: 12px;
+  }
+
+  .price-display {
+    font-size: 16px;
+  }
+
+  .price-value {
+    font-size: 20px;
+  }
+}
