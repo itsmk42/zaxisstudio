@@ -55,7 +55,7 @@ export default function CustomLithophaneCard() {
             href="/custom-lithophane"
             aria-label="Create your custom lithophane"
           >
-            Customize Now
+            ✨ Customize Now
           </a>
         </div>
       </div>

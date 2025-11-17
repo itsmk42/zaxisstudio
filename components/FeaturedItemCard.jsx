@@ -16,7 +16,7 @@ export default function FeaturedItemCard({ title, description, image, buttonText
             href={buttonHref}
             aria-label={`${buttonText} - ${title}`}
           >
-            {buttonText}
+            ⚡ {buttonText}
           </a>
         </div>
       </div>

@@ -21,7 +21,7 @@ export default function ProductCard({ product }) {
             href={`/checkout?buy=${product.id}`}
             aria-label={`Buy ${product.title} now`}
           >
-            Buy Now
+            ⚡ Buy Now
           </a>
         </div>
       </div>

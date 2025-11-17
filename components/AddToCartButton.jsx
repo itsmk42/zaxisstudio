@@ -17,7 +17,7 @@ export default function AddToCartButton({ product }) {
       aria-label={added ? 'Added to cart' : 'Add to cart'}
       aria-disabled={added ? 'true' : 'false'}
     >
-      {added ? 'Added!' : 'Add to Cart'}
+      {added ? '✓ Added!' : '🛒 Add to Cart'}
     </button>
   );
 }
