@@ -26,7 +26,7 @@ export default function CheckoutClientNew() {
     gstin: '',
     company_name: '',
     // Step 3: Payment
-    payment_method: 'upi',
+    payment_method: 'cod',
   });
 
   const [pincodeError, setPincodeError] = useState('');
@@ -436,52 +436,13 @@ export default function CheckoutClientNew() {
                 <label className="payment-option">
                   <input
                     type="radio"
-                    value="upi"
-                    checked={form.payment_method === 'upi'}
+                    value="phonepe"
+                    checked={form.payment_method === 'phonepe'}
                     onChange={(e) => setForm({ ...form, payment_method: e.target.value })}
                   />
                   <span className="payment-label">
                     <span className="payment-icon">📱</span>
-                    <span>UPI / QR Code</span>
-                  </span>
-                </label>
-
-                <label className="payment-option">
-                  <input
-                    type="radio"
-                    value="card"
-                    checked={form.payment_method === 'card'}
-                    onChange={(e) => setForm({ ...form, payment_method: e.target.value })}
-                  />
-                  <span className="payment-label">
-                    <span className="payment-icon">💳</span>
-                    <span>Credit / Debit Card</span>
-                  </span>
-                </label>
-
-                <label className="payment-option">
-                  <input
-                    type="radio"
-                    value="wallet"
-                    checked={form.payment_method === 'wallet'}
-                    onChange={(e) => setForm({ ...form, payment_method: e.target.value })}
-                  />
-                  <span className="payment-label">
-                    <span className="payment-icon">💰</span>
-                    <span>Wallets (Paytm, PhonePe, Amazon Pay)</span>
-                  </span>
-                </label>
-
-                <label className="payment-option">
-                  <input
-                    type="radio"
-                    value="netbanking"
-                    checked={form.payment_method === 'netbanking'}
-                    onChange={(e) => setForm({ ...form, payment_method: e.target.value })}
-                  />
-                  <span className="payment-label">
-                    <span className="payment-icon">🏦</span>
-                    <span>Net Banking</span>
+                    <span>PhonePe</span>
                   </span>
                 </label>
 

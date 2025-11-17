@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { notify } from './Toast';
 import { X, Plus, GripVertical } from 'lucide-react';
 
@@ -29,12 +29,17 @@ export default function ProductFormSection({
     seo: false
   });
 
-  const toggleSection = (section) => {
+  const toggleSection = useCallback((section) => {
     setExpandedSections(prev => ({
       ...prev,
       [section]: !prev[section]
     }));
-  };
+  }, []);
+
+  // Memoized handler to prevent scroll-to-top bug
+  const handleFormChange = useCallback((field, value) => {
+    setProductForm(prev => ({ ...prev, [field]: value }));
+  }, [setProductForm]);
 
   const handleImageChange = async (e) => {
     const file = e.target.files?.[0];
@@ -299,7 +304,7 @@ export default function ProductFormSection({
             type="text"
             required
             value={productForm.title}
-            onChange={(e) => setProductForm({ ...productForm, title: e.target.value })}
+            onChange={(e) => handleFormChange('title', e.target.value)}
             placeholder="Product name"
           />
         </div>
@@ -312,7 +317,7 @@ export default function ProductFormSection({
             min="0"
             required
             value={productForm.price}
-            onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+            onChange={(e) => handleFormChange('price', e.target.value)}
             placeholder="0"
           />
         </div>
@@ -324,7 +329,7 @@ export default function ProductFormSection({
               id="product-sku"
               type="text"
               value={productForm.sku}
-              onChange={(e) => setProductForm({ ...productForm, sku: e.target.value })}
+              onChange={(e) => handleFormChange('sku', e.target.value)}
               placeholder="SKU"
               style={{ flex: 1 }}
             />
@@ -346,7 +351,7 @@ export default function ProductFormSection({
             type="number"
             min="0"
             value={productForm.inventory}
-            onChange={(e) => setProductForm({ ...productForm, inventory: e.target.value })}
+            onChange={(e) => handleFormChange('inventory', e.target.value)}
             placeholder="0"
           />
         </div>
@@ -356,7 +361,7 @@ export default function ProductFormSection({
           <textarea
             id="product-description"
             value={productForm.description}
-            onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+            onChange={(e) => handleFormChange('description', e.target.value)}
             placeholder="Product description"
             rows="4"
           />
@@ -368,7 +373,7 @@ export default function ProductFormSection({
             id="product-image"
             type="url"
             value={productForm.imageUrl}
-            onChange={(e) => setProductForm({ ...productForm, imageUrl: e.target.value })}
+            onChange={(e) => handleFormChange('imageUrl', e.target.value)}
             placeholder="https://example.com/image.jpg"
           />
         </div>
@@ -407,7 +412,7 @@ export default function ProductFormSection({
             <select
               id="product-category"
               value={productForm.categories}
-              onChange={(e) => setProductForm({ ...productForm, categories: e.target.value })}
+              onChange={(e) => handleFormChange('categories', e.target.value)}
               required
             >
               <option value="">Select a category</option>
@@ -466,30 +471,8 @@ export default function ProductFormSection({
             id="product-tags"
             type="text"
             value={productForm.tags}
-            onChange={(e) => setProductForm({ ...productForm, tags: e.target.value })}
+            onChange={(e) => handleFormChange('tags', e.target.value)}
             placeholder="tag1, tag2, tag3"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="product-seo-title">SEO Title</label>
-          <input
-            id="product-seo-title"
-            type="text"
-            value={productForm.seoTitle}
-            onChange={(e) => setProductForm({ ...productForm, seoTitle: e.target.value })}
-            placeholder="SEO title"
-          />
-        </div>
-
-        <div className="form-group form-col-span">
-          <label htmlFor="product-seo-desc">SEO Description</label>
-          <textarea
-            id="product-seo-desc"
-            value={productForm.seoDescription}
-            onChange={(e) => setProductForm({ ...productForm, seoDescription: e.target.value })}
-            placeholder="SEO description"
-            rows="3"
           />
         </div>
       </div>
@@ -638,15 +621,24 @@ export default function ProductFormSection({
       {/* SEO SETTINGS SECTION */}
       <CollapsibleSection title="SEO Settings" section="seo" icon="🔍">
         <div className="form-grid">
+          <div className="form-group form-col-span">
+            <p style={{ color: '#666', fontSize: '14px', marginBottom: '12px' }}>
+              SEO settings help improve your product's visibility in search engines. You can auto-generate these based on product information or customize them manually.
+            </p>
+          </div>
+
           <div className="form-group">
             <label htmlFor="product-seo-title">SEO Title</label>
             <input
               id="product-seo-title"
               type="text"
               value={productForm.seoTitle}
-              onChange={(e) => setProductForm({ ...productForm, seoTitle: e.target.value })}
+              onChange={(e) => handleFormChange('seoTitle', e.target.value)}
               placeholder="SEO title for search engines"
             />
+            <small style={{ color: '#999', marginTop: '4px', display: 'block' }}>
+              Recommended: 50-60 characters
+            </small>
           </div>
 
           <div className="form-group form-col-span">
@@ -654,10 +646,13 @@ export default function ProductFormSection({
             <textarea
               id="product-seo-desc"
               value={productForm.seoDescription}
-              onChange={(e) => setProductForm({ ...productForm, seoDescription: e.target.value })}
+              onChange={(e) => handleFormChange('seoDescription', e.target.value)}
               placeholder="SEO description for search engines"
               rows="3"
             />
+            <small style={{ color: '#999', marginTop: '4px', display: 'block' }}>
+              Recommended: 150-160 characters
+            </small>
           </div>
 
           <div className="form-group">
@@ -666,9 +661,12 @@ export default function ProductFormSection({
               id="product-tags"
               type="text"
               value={productForm.tags}
-              onChange={(e) => setProductForm({ ...productForm, tags: e.target.value })}
+              onChange={(e) => handleFormChange('tags', e.target.value)}
               placeholder="tag1, tag2, tag3"
             />
+            <small style={{ color: '#999', marginTop: '4px', display: 'block' }}>
+              Comma-separated keywords for better searchability
+            </small>
           </div>
         </div>
       </CollapsibleSection>

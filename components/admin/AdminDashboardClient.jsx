@@ -7,6 +7,7 @@ import CarouselSlidesList from "./CarouselSlidesList";
 import ProductFormSection from "./ProductFormSection";
 import OrderManagementSection from "./OrderManagementSection";
 import HomepageManagementSection from "./HomepageManagementSection";
+import SeoSettingsSection from "./SeoSettingsSection";
 import { supabaseBrowser } from "../../lib/supabaseClient";
 
 function Toolbar({ children }) {
@@ -218,6 +219,9 @@ export default function AdminDashboardClient() {
       tags: productForm.tags || "",
       seo_title: productForm.seoTitle || "",
       seo_description: productForm.seoDescription || "",
+      variants: productForm.variants || [],
+      specifications: productForm.specifications || [],
+      images: productForm.images || []
     };
 
     // If in edit mode, update the product
@@ -404,6 +408,7 @@ export default function AdminDashboardClient() {
         <nav className="admin-tabs-nav" role="tablist" aria-label="Admin sections">
           {[
             { key: "products", label: "📦 Products", icon: "📦" },
+            { key: "seo", label: "🔍 SEO Settings", icon: "🔍" },
             { key: "carousel", label: "🎠 Carousel", icon: "🎠" },
             { key: "orders", label: "📋 Orders", icon: "📋" },
             { key: "homepage", label: "🏠 Homepage", icon: "🏠" }
@@ -511,6 +516,15 @@ export default function AdminDashboardClient() {
             onConfirm={() => deleteProduct(confirmDelete.id)}
             onCancel={() => setConfirmDelete({ open: false, id: null, title: "" })}
           />
+        </section>
+      )}
+
+      {/* SEO Settings Management */}
+      {tab === "seo" && (
+        <section className="admin-panel" role="tabpanel">
+          <h2 className="admin-section-title">🔍 SEO Settings</h2>
+          <p className="admin-section-subtitle">Manage SEO metadata for individual products</p>
+          <SeoSettingsSection products={products} />
         </section>
       )}
 

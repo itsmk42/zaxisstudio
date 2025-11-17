@@ -169,10 +169,14 @@ export default function ProductDetailClient({ product, relatedProducts = [] }) {
 
             {/* CTA buttons */}
             <div className="product-cta-buttons">
-              <AddToCartButton product={product} />
+              <AddToCartButton
+                product={product}
+                selectedVariant={selectedVariant}
+                quantity={quantity}
+              />
               <a
                 className="btn buy-now"
-                href={`/checkout?buy=${product.id}`}
+                href={`/checkout?buy=${product.id}${selectedVariant ? `&variant=${selectedVariant.id}` : ''}`}
                 aria-label={`Buy ${product.title} now`}
               >
                 Buy Now
