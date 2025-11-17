@@ -35,7 +35,42 @@ function validatePayload(body) {
 export async function GET() {
   const { data, error } = await supabaseServer().from('products').select('*');
   if (error) return new NextResponse(error.message, { status: 500 });
-  return NextResponse.json(data || []);
+
+  // Fetch related data for each product (variants, specifications, images)
+  const productsWithRelated = await Promise.all((data || []).map(async (product) => {
+    // Fetch variants
+    const { data: variants } = await supabaseServer()
+      .from('product_variants')
+      .select('*')
+      .eq('product_id', product.id)
+      .order('id', { ascending: true })
+      .catch(() => ({ data: [] }));
+
+    // Fetch specifications
+    const { data: specifications } = await supabaseServer()
+      .from('product_specifications')
+      .select('*')
+      .eq('product_id', product.id)
+      .order('display_order', { ascending: true })
+      .catch(() => ({ data: [] }));
+
+    // Fetch images
+    const { data: images } = await supabaseServer()
+      .from('product_images')
+      .select('*')
+      .eq('product_id', product.id)
+      .order('display_order', { ascending: true })
+      .catch(() => ({ data: [] }));
+
+    return {
+      ...product,
+      variants: variants || [],
+      specifications: specifications || [],
+      images: images || []
+    };
+  }));
+
+  return NextResponse.json(productsWithRelated || []);
 }
 
 export async function POST(req) {

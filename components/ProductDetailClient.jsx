@@ -45,33 +45,22 @@ export default function ProductDetailClient({ product, relatedProducts = [] }) {
             .map(img => isStock ? '/placeholder.svg' : img.image_url)
         : [productImage]);
 
-  // Build specifications from product data
+  // Build specifications from product data - only use actual specifications, no hardcoded fallback
   const specifications = product.specifications && product.specifications.length > 0
     ? product.specifications
-    : [
-        { spec_key: 'Dimensions', spec_value: '6" x 6" x 8"' },
-        { spec_key: 'Material', spec_value: 'Premium PLA with LED components' },
-        { spec_key: 'Power', spec_value: 'Wall-powered, 5V USB' },
-        { spec_key: 'Weight', spec_value: '250g' },
-      ];
+    : [];
 
-  // Accordion items for details
+  // Accordion items for details - only include Specifications if they exist
   const detailsItems = [
     {
       title: 'Description',
       content: (
         <div>
-          <p>{product.description || 'Premium quality product crafted with attention to detail.'}</p>
-          <ul style={{ marginTop: '12px', paddingLeft: '20px' }}>
-            <li>High-quality materials</li>
-            <li>Carefully crafted design</li>
-            <li>Perfect for gifts or personal use</li>
-            <li>Durable and long-lasting</li>
-          </ul>
+          <p>{product.description || 'No description available for this product.'}</p>
         </div>
       ),
     },
-    {
+    ...(specifications.length > 0 ? [{
       title: 'Specifications',
       content: (
         <div>
@@ -85,7 +74,7 @@ export default function ProductDetailClient({ product, relatedProducts = [] }) {
           </dl>
         </div>
       ),
-    },
+    }] : []),
     {
       title: 'Shipping & Returns',
       content: (

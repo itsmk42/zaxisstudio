@@ -252,6 +252,7 @@ export default function AdminDashboardClient() {
         fetchProducts();
       } else {
         const reason = json?.error || (Array.isArray(json?.details) ? json.details.join(", ") : "Failed to update product");
+        console.error('[addProduct:update] error response:', { status: res.status, json });
         notify(reason, "error");
       }
       return;
@@ -279,6 +280,7 @@ export default function AdminDashboardClient() {
       fetchProducts();
     } else {
       const reason = json?.error || (Array.isArray(json?.details) ? json.details.join(", ") : "Failed to add product");
+      console.error('[addProduct:create] error response:', { status: res.status, json });
       notify(reason, "error");
     }
   }
