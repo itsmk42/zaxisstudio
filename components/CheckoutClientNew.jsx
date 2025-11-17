@@ -95,6 +95,11 @@ export default function CheckoutClientNew() {
       notify('Please fill in all required fields', 'error');
       return false;
     }
+    // Check if pincode was successfully validated (city and state should be populated)
+    if (!form.city || !form.state) {
+      notify('Please enter a valid pincode', 'error');
+      return false;
+    }
     if (form.gst_invoice && (!form.gstin || !form.company_name)) {
       notify('Please fill in GST details', 'error');
       return false;
