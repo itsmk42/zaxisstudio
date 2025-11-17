@@ -4,6 +4,45 @@ import { useState, useEffect, useCallback } from 'react';
 import { notify } from './Toast';
 import { X, Plus, GripVertical } from 'lucide-react';
 
+// Collapsible section component - defined outside to prevent recreation on each render
+function CollapsibleSection({ title, section, children, icon, expandedSections, toggleSection }) {
+  return (
+    <div style={{ marginBottom: '16px', border: '1px solid #e0e0e0', borderRadius: '8px', overflow: 'hidden' }}>
+      <button
+        type="button"
+        onClick={() => toggleSection(section)}
+        style={{
+          width: '100%',
+          padding: '16px',
+          background: expandedSections[section] ? '#f0f8ff' : '#f9f9f9',
+          border: 'none',
+          cursor: 'pointer',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: '16px',
+          fontWeight: '600',
+          color: '#333',
+          transition: 'all 0.2s ease'
+        }}
+      >
+        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {icon}
+          {title}
+        </span>
+        <span style={{ transform: expandedSections[section] ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}>
+          ▼
+        </span>
+      </button>
+      {expandedSections[section] && (
+        <div style={{ padding: '16px', borderTop: '1px solid #e0e0e0', background: '#fff' }}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ProductFormSection({
   productForm,
   setProductForm,
@@ -417,42 +456,7 @@ export default function ProductFormSection({
     });
   };
 
-  // Helper component for collapsible sections
-  const CollapsibleSection = ({ title, section, children, icon }) => (
-    <div style={{ marginBottom: '16px', border: '1px solid #e0e0e0', borderRadius: '8px', overflow: 'hidden' }}>
-      <button
-        type="button"
-        onClick={() => toggleSection(section)}
-        style={{
-          width: '100%',
-          padding: '16px',
-          background: expandedSections[section] ? '#f0f8ff' : '#f9f9f9',
-          border: 'none',
-          cursor: 'pointer',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          fontSize: '16px',
-          fontWeight: '600',
-          color: '#333',
-          transition: 'all 0.2s ease'
-        }}
-      >
-        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {icon}
-          {title}
-        </span>
-        <span style={{ transform: expandedSections[section] ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}>
-          ▼
-        </span>
-      </button>
-      {expandedSections[section] && (
-        <div style={{ padding: '16px', borderTop: '1px solid #e0e0e0', background: '#fff' }}>
-          {children}
-        </div>
-      )}
-    </div>
-  );
+
 
   const primaryImage = (productForm.images || []).find((img) => img.is_primary) || (productForm.images || [])[0] || null;
   const previewImageSrc = primaryImage?.image_url || productForm.imageUrl || '/placeholder.svg';
@@ -550,7 +554,7 @@ export default function ProductFormSection({
 
 
       {/* BASIC INFORMATION SECTION */}
-      <CollapsibleSection title="Basic Information" section="basic" icon="📝">
+      <CollapsibleSection title="Basic Information" section="basic" icon="📝" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="form-grid">
           <div className="form-group form-col-span">
             <label htmlFor="product-name">
@@ -641,7 +645,7 @@ export default function ProductFormSection({
       </CollapsibleSection>
 
       {/* PRODUCT IMAGES SECTION */}
-      <CollapsibleSection title="Images" section="images" icon="🖼">
+      <CollapsibleSection title="Images" section="images" icon="🖼" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="form-group form-col-span">
           <p style={{ color: '#666', fontSize: '14px', marginBottom: '12px' }}>
             Upload one or more product images. The first image will be used as the main image on the website.
@@ -768,7 +772,7 @@ export default function ProductFormSection({
       </CollapsibleSection>
 
       {/* CATEGORIES &amp; TAGS SECTION */}
-      <CollapsibleSection title="Categories &amp; Tags" section="categories" icon="🏷">
+      <CollapsibleSection title="Categories & Tags" section="categories" icon="🏷" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="form-grid">
           <div className="form-group">
             <label htmlFor="product-category">
@@ -848,7 +852,7 @@ export default function ProductFormSection({
       </CollapsibleSection>
 
       {/* PRODUCT VARIANTS SECTION */}
-      <CollapsibleSection title="Product Variants" section="variants" icon="🎨">
+      <CollapsibleSection title="Product Variants" section="variants" icon="🎨" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div style={{ marginBottom: '16px' }}>
           <p style={{ margin: '0 0 8px', color: '#4b5563', fontSize: '14px' }}>
             Use variants when this product comes in different sizes, colours, materials, etc.
@@ -1047,7 +1051,7 @@ export default function ProductFormSection({
       </CollapsibleSection>
 
       {/* PRODUCT SPECIFICATIONS SECTION */}
-      <CollapsibleSection title="Product Specifications" section="specifications" icon="📋">
+      <CollapsibleSection title="Product Specifications" section="specifications" icon="📋" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div style={{ marginBottom: '16px' }}>
           <button type="button" className="btn btn-secondary btn-sm" onClick={addSpecification} style={{ marginBottom: '12px' }}>
             <Plus size={16} style={{ marginRight: '4px' }} /> Add Specification
