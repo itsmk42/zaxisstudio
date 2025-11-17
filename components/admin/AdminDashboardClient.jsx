@@ -10,6 +10,9 @@ import HomepageManagementSection from "./HomepageManagementSection";
 import SeoSettingsSection from "./SeoSettingsSection";
 import { supabaseBrowser } from "../../lib/supabaseClient";
 
+
+const DRAFT_STORAGE_KEY = "zaxis_product_form_draft";
+
 function Toolbar({ children }) {
   return <div className="admin-toolbar">{children}</div>;
 }
@@ -237,6 +240,13 @@ export default function AdminDashboardClient() {
         notify("Product updated successfully!", "success");
         try { await logAudit({ action: "product_update", payload: { id: editingProductId, ...payload } }); } catch {}
         resetProductForm();
+        if (typeof window !== "undefined") {
+          try {
+            window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+          } catch (error) {
+            console.error("Failed to clear product draft after update", error);
+          }
+        }
         setIsEditMode(false);
         setEditingProductId(null);
         fetchProducts();
@@ -259,6 +269,13 @@ export default function AdminDashboardClient() {
       notify("Product added successfully!", "success");
       try { await logAudit({ action: "product_add", payload }); } catch {}
       resetProductForm();
+      if (typeof window !== "undefined") {
+        try {
+          window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+        } catch (error) {
+          console.error("Failed to clear product draft after add", error);
+        }
+      }
       fetchProducts();
     } else {
       const reason = json?.error || (Array.isArray(json?.details) ? json.details.join(", ") : "Failed to add product");
@@ -312,7 +329,7 @@ export default function AdminDashboardClient() {
   }
 
   function exportProductsCSV() {
-    const header = ["id", "title", "price", "image_url"]; 
+    const header = ["id", "title", "price", "image_url"];
     const lines = [header.join(",")];
     products.forEach((p) => {
       lines.push([p.id, p.title, p.price, p.image_url || ""].join(","));
@@ -350,7 +367,7 @@ export default function AdminDashboardClient() {
   }
 
   function exportOrdersCSV() {
-    const header = ["id", "status", "amount", "customer_name", "customer_phone"]; 
+    const header = ["id", "status", "amount", "customer_name", "customer_phone"];
     const lines = [header.join(",")];
     orders.forEach((o) => {
       const amount = (o.items || []).reduce((sum, i) => sum + (i.price || 0), 0);
