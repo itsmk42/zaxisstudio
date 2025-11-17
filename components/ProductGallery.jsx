@@ -1,11 +1,14 @@
 "use client";
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 
 export default function ProductGallery({ images = [], productTitle = '' }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const galleryRef = useRef(null);
 
   // Use provided images or fallback to placeholder
   const galleryImages = images.length > 0 ? images : ['/placeholder.svg'];
@@ -27,10 +30,38 @@ export default function ProductGallery({ images = [], productTitle = '' }) {
     if (e.key === 'ArrowRight') goToNext();
   };
 
+  // Handle touch/swipe gestures
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = (e) => {
+    setTouchEnd(e.changedTouches[0].clientX);
+    handleSwipe();
+  };
+
+  const handleSwipe = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      goToNext();
+    } else if (isRightSwipe) {
+      goToPrevious();
+    }
+  };
+
   return (
     <div className="product-gallery" onKeyDown={handleKeyDown} tabIndex={0} role="region" aria-label="Product image gallery">
       {/* Main image display */}
-      <div className={`gallery-main ${isZoomed ? 'zoomed' : ''}`}>
+      <div
+        className={`gallery-main ${isZoomed ? 'zoomed' : ''}`}
+        ref={galleryRef}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <Image
           src={galleryImages[currentImageIndex]}
           alt={`${productTitle} - Image ${currentImageIndex + 1}`}
