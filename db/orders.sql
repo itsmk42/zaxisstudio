@@ -21,10 +21,14 @@ CREATE TABLE IF NOT EXISTS public.orders (
   
   -- Custom order data (for custom products like lithophanes, keychains, etc.)
   custom JSONB,
-  
+
   -- Order totals
   total_amount DECIMAL(10, 2),
-  
+
+  -- Tracking information
+  tracking_number VARCHAR(255),
+  tracking_url TEXT,
+
   -- Timestamps
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
