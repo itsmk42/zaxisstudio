@@ -48,41 +48,45 @@ export default function CheckoutClientNew() {
   const validatePincode = async (pincode) => {
     if (pincode.length !== 6 || !/^\d+$/.test(pincode)) {
       setPincodeError('Please enter a valid 6-digit pincode');
+      setForm((prev) => ({ ...prev, city: '', state: '' }));
       return false;
     }
 
-    setIsLoading(true);
     try {
-      // Using a free pincode API (you can replace with your own)
-      const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+      // Use our API route for pincode lookup
+      const response = await fetch(`/api/pincode?pincode=${pincode}`);
       const data = await response.json();
 
-      if (data[0].Status === 'Success' && data[0].PostOffice && data[0].PostOffice.length > 0) {
-        const postOffice = data[0].PostOffice[0];
+      if (response.ok && data.success) {
         setForm((prev) => ({
           ...prev,
-          city: postOffice.District,
-          state: postOffice.State,
+          city: data.city,
+          state: data.state,
         }));
         setPincodeError('');
         return true;
       } else {
-        setPincodeError('Pincode not found. Please check and try again.');
+        setPincodeError(data.error || 'Pincode not found. Please check and try again.');
+        setForm((prev) => ({ ...prev, city: '', state: '' }));
         return false;
       }
     } catch (error) {
+      console.error('Pincode validation error:', error);
       setPincodeError('Unable to validate pincode. Please try again.');
+      setForm((prev) => ({ ...prev, city: '', state: '' }));
       return false;
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const handlePincodeChange = (e) => {
     const value = e.target.value;
     setForm((prev) => ({ ...prev, pincode: value }));
+    setPincodeError(''); // Clear error when user starts typing
     if (value.length === 6) {
       validatePincode(value);
+    } else if (value.length < 6) {
+      // Clear city/state if pincode is incomplete
+      setForm((prev) => ({ ...prev, city: '', state: '' }));
     }
   };
 
@@ -101,13 +105,21 @@ export default function CheckoutClientNew() {
   const handleNextStep = () => {
     if (step === 1 && validateStep1()) {
       setStep(2);
+      setIsLoading(false);
+      setStatus('');
     } else if (step === 2) {
       setStep(3);
+      setIsLoading(false);
+      setStatus('');
     }
   };
 
   const handlePrevStep = () => {
-    if (step > 1) setStep(step - 1);
+    if (step > 1) {
+      setStep(step - 1);
+      setIsLoading(false);
+      setStatus('');
+    }
   };
 
   async function placeOrder(e) {
