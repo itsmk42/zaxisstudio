@@ -243,13 +243,24 @@ export default function AdminDashboardClient() {
 
     // If in edit mode, update the product
     if (isEditMode && editingProductId) {
+      const updatePayload = { ...payload, _method: "PUT", id: editingProductId };
+      console.log('[addProduct:update] sending update request', {
+        productId: editingProductId,
+        payloadKeys: Object.keys(updatePayload),
+        hasVariants: !!updatePayload.variants,
+        hasSpecs: !!updatePayload.specifications,
+        hasImages: !!updatePayload.images
+      });
+
       const res = await fetch("/api/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...payload, _method: "PUT", id: editingProductId })
+        body: JSON.stringify(updatePayload)
       });
 
       const json = await res.json().catch(() => ({}));
+      console.log('[addProduct:update] response received', { status: res.status, ok: res.ok, json });
+
       if (res.ok) {
         notify("Product updated successfully!", "success");
         try { await logAudit({ action: "product_update", payload: { id: editingProductId, ...payload } }); } catch {}
@@ -266,7 +277,7 @@ export default function AdminDashboardClient() {
         fetchProducts();
       } else {
         const reason = json?.error || (Array.isArray(json?.details) ? json.details.join(", ") : "Failed to update product");
-        console.error('[addProduct:update] error response:', { status: res.status, json });
+        console.error('[addProduct:update] error response:', { status: res.status, json, reason });
         notify(reason, "error");
       }
       return;

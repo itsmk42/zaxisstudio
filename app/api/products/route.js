@@ -153,11 +153,11 @@ export async function POST(req) {
       return json(400, { error: 'id must be a valid number' });
     }
 
-    console.log('[products:update] updating product', { productId, updateFields: Object.keys(update) });
+    console.log('[products:update] updating product', { productId, updateFields: Object.keys(update), hasVariants: !!variants, hasSpecs: !!specifications, hasImages: !!images });
 
     const { data, error } = await supabaseServer().from('products').update(update).eq('id', productId).select('*').maybeSingle();
     if (error) {
-      console.error('[products:update] error', error);
+      console.error('[products:update] error updating product', error);
       return json(500, { error: error.message });
     }
 
@@ -168,53 +168,77 @@ export async function POST(req) {
 
     // Handle variants update
     if (variants && Array.isArray(variants)) {
-      // Delete existing variants
-      await supabaseServer().from('product_variants').delete().eq('product_id', productId).catch(e => console.warn('[products:variants] delete warning', e));
-      // Insert new variants
-      if (variants.length > 0) {
-        const variantsToInsert = variants.map(v => ({
-          product_id: productId,
-          variant_name: v.variant_name,
-          price: v.price,
-          stock_quantity: v.stock_quantity,
-          sku: v.sku,
-          image_url: v.image_url || null,
-          color: v.color || null
-        }));
-        await supabaseServer().from('product_variants').insert(variantsToInsert).catch(e => console.warn('[products:variants] insert warning', e));
+      try {
+        console.log('[products:update] updating variants for product', productId, { count: variants.length });
+        // Delete existing variants
+        const { error: deleteError } = await supabaseServer().from('product_variants').delete().eq('product_id', productId);
+        if (deleteError) console.warn('[products:variants] delete warning', deleteError);
+
+        // Insert new variants
+        if (variants.length > 0) {
+          const variantsToInsert = variants.map(v => ({
+            product_id: productId,
+            variant_name: v.variant_name,
+            price: v.price,
+            stock_quantity: v.stock_quantity,
+            sku: v.sku,
+            image_url: v.image_url || null,
+            color: v.color || null
+          }));
+          const { error: insertError } = await supabaseServer().from('product_variants').insert(variantsToInsert);
+          if (insertError) console.warn('[products:variants] insert warning', insertError);
+        }
+      } catch (e) {
+        console.error('[products:update] variants update exception', e);
       }
     }
 
     // Handle specifications update
     if (specifications && Array.isArray(specifications)) {
-      // Delete existing specifications
-      await supabaseServer().from('product_specifications').delete().eq('product_id', productId).catch(e => console.warn('[products:specifications] delete warning', e));
-      // Insert new specifications
-      if (specifications.length > 0) {
-        const specsToInsert = specifications.map((s, idx) => ({
-          product_id: productId,
-          spec_key: s.spec_key,
-          spec_value: s.spec_value,
-          display_order: idx
-        }));
-        await supabaseServer().from('product_specifications').insert(specsToInsert).catch(e => console.warn('[products:specifications] insert warning', e));
+      try {
+        console.log('[products:update] updating specifications for product', productId, { count: specifications.length });
+        // Delete existing specifications
+        const { error: deleteError } = await supabaseServer().from('product_specifications').delete().eq('product_id', productId);
+        if (deleteError) console.warn('[products:specifications] delete warning', deleteError);
+
+        // Insert new specifications
+        if (specifications.length > 0) {
+          const specsToInsert = specifications.map((s, idx) => ({
+            product_id: productId,
+            spec_key: s.spec_key,
+            spec_value: s.spec_value,
+            display_order: idx
+          }));
+          const { error: insertError } = await supabaseServer().from('product_specifications').insert(specsToInsert);
+          if (insertError) console.warn('[products:specifications] insert warning', insertError);
+        }
+      } catch (e) {
+        console.error('[products:update] specifications update exception', e);
       }
     }
 
     // Handle images update
     if (images && Array.isArray(images)) {
-      // Delete existing images
-      await supabaseServer().from('product_images').delete().eq('product_id', productId).catch(e => console.warn('[products:images] delete warning', e));
-      // Insert new images
-      if (images.length > 0) {
-        const imagesToInsert = images.map((img, idx) => ({
-          product_id: productId,
-          image_url: img.image_url,
-          alt_text: img.alt_text,
-          display_order: idx,
-          is_primary: img.is_primary || idx === 0
-        }));
-        await supabaseServer().from('product_images').insert(imagesToInsert).catch(e => console.warn('[products:images] insert warning', e));
+      try {
+        console.log('[products:update] updating images for product', productId, { count: images.length });
+        // Delete existing images
+        const { error: deleteError } = await supabaseServer().from('product_images').delete().eq('product_id', productId);
+        if (deleteError) console.warn('[products:images] delete warning', deleteError);
+
+        // Insert new images
+        if (images.length > 0) {
+          const imagesToInsert = images.map((img, idx) => ({
+            product_id: productId,
+            image_url: img.image_url,
+            alt_text: img.alt_text,
+            display_order: idx,
+            is_primary: img.is_primary || idx === 0
+          }));
+          const { error: insertError } = await supabaseServer().from('product_images').insert(imagesToInsert);
+          if (insertError) console.warn('[products:images] insert warning', insertError);
+        }
+      } catch (e) {
+        console.error('[products:update] images update exception', e);
       }
     }
 
@@ -226,6 +250,8 @@ export async function POST(req) {
     } catch (e) {
       console.warn('[products:update] cache revalidation warning', e);
     }
+
+    console.log('[products:update] product updated successfully', { productId });
     return json(200, data);
   }
   const { valid, errors, title, price, image_url, description, sku, inventory, category, tags, seo_title, seo_description } = validatePayload(body);
