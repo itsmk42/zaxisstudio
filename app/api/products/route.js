@@ -32,15 +32,25 @@ function validatePayload(body) {
   };
 }
 
-export async function GET() {
+export async function GET(req) {
   try {
+    // Check if client wants related data (variants, specifications, images)
+    const { searchParams } = new URL(req.url);
+    const includeRelated = searchParams.get('includeRelated') === 'true';
+
     const { data, error } = await supabaseServer().from('products').select('*');
     if (error) {
       console.error('[products:GET] error fetching products:', error);
       return new NextResponse(error.message, { status: 500 });
     }
 
-    console.log('[products:GET] fetched products:', { count: data?.length || 0 });
+    console.log('[products:GET] fetched products:', { count: data?.length || 0, includeRelated });
+
+    // If related data is not requested, return basic products immediately
+    if (!includeRelated) {
+      console.log('[products:GET] returning basic products without related data');
+      return NextResponse.json(data || []);
+    }
 
     // Fetch related data for each product (variants, specifications, images)
     const productsWithRelated = await Promise.all((data || []).map(async (product) => {

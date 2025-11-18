@@ -63,7 +63,8 @@ export default function AdminDashboardClient() {
   async function fetchProducts() {
     try {
       setLoading((l) => ({ ...l, products: true }));
-      const res = await fetch("/api/products");
+      // Request related data (variants, specifications, images) for admin panel
+      const res = await fetch("/api/products?includeRelated=true");
       console.log('[fetchProducts] response status:', res.status);
 
       if (!res.ok) {
