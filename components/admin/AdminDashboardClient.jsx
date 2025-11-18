@@ -132,11 +132,21 @@ export default function AdminDashboardClient() {
     fetchOrders();
     fetchCarouselSlides();
     fetchCategories();
-    let productChannel, orderChannel, carouselChannel;
+    let productChannel, variantsChannel, specificationsChannel, orderChannel, carouselChannel;
     try {
       productChannel = supabaseBrowser
         .channel("admin-products")
         .on("postgres_changes", { event: "*", schema: "public", table: "products" }, () => fetchProducts())
+        .subscribe();
+      // Listen to variants changes to refresh product data
+      variantsChannel = supabaseBrowser
+        .channel("admin-variants")
+        .on("postgres_changes", { event: "*", schema: "public", table: "product_variants" }, () => fetchProducts())
+        .subscribe();
+      // Listen to specifications changes to refresh product data
+      specificationsChannel = supabaseBrowser
+        .channel("admin-specifications")
+        .on("postgres_changes", { event: "*", schema: "public", table: "product_specifications" }, () => fetchProducts())
         .subscribe();
       orderChannel = supabaseBrowser
         .channel("admin-orders")
@@ -151,6 +161,8 @@ export default function AdminDashboardClient() {
     }
     return () => {
       try { supabaseBrowser.removeChannel(productChannel); } catch {}
+      try { supabaseBrowser.removeChannel(variantsChannel); } catch {}
+      try { supabaseBrowser.removeChannel(specificationsChannel); } catch {}
       try { supabaseBrowser.removeChannel(orderChannel); } catch {}
       try { supabaseBrowser.removeChannel(carouselChannel); } catch {}
     };

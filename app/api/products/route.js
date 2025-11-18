@@ -291,6 +291,28 @@ export async function POST(req) {
       return json(400, { error: 'Failed to update product related data', details: relatedDataErrors });
     }
 
+    // Fetch the updated related data to return in response
+    const { data: updatedVariants } = await supabaseServer()
+      .from('product_variants')
+      .select('*')
+      .eq('product_id', productId)
+      .order('id', { ascending: true })
+      .catch(() => ({ data: [] }));
+
+    const { data: updatedSpecifications } = await supabaseServer()
+      .from('product_specifications')
+      .select('*')
+      .eq('product_id', productId)
+      .order('display_order', { ascending: true })
+      .catch(() => ({ data: [] }));
+
+    const { data: updatedImages } = await supabaseServer()
+      .from('product_images')
+      .select('*')
+      .eq('product_id', productId)
+      .order('display_order', { ascending: true })
+      .catch(() => ({ data: [] }));
+
     // Revalidate cached pages when product is updated
     try {
       revalidatePath('/');
@@ -300,8 +322,13 @@ export async function POST(req) {
       console.warn('[products:update] cache revalidation warning', e);
     }
 
-    console.log('[products:update] product updated successfully', { productId });
-    return json(200, data);
+    console.log('[products:update] product updated successfully', { productId, variantCount: updatedVariants?.length || 0, specCount: updatedSpecifications?.length || 0 });
+    return json(200, {
+      ...data,
+      variants: updatedVariants || [],
+      specifications: updatedSpecifications || [],
+      images: updatedImages || []
+    });
   }
   const { valid, errors, title, price, image_url, description, sku, inventory, category, tags, seo_title, seo_description } = validatePayload(body);
   if (!valid) {
@@ -333,42 +360,101 @@ export async function POST(req) {
 
   // Handle variants, specifications, and images if provided
   const productId = data.id;
+  const createdDataErrors = [];
+
   if (body.variants && Array.isArray(body.variants) && body.variants.length > 0) {
-    const variantsToInsert = body.variants.map(v => ({
-      product_id: productId,
-      variant_name: v.variant_name,
-      price: v.price,
-      stock_quantity: v.stock_quantity,
-      sku: v.sku,
-      image_url: v.image_url || null,
-      color: v.color || null
-    }));
-    await supabaseServer().from('product_variants').insert(variantsToInsert).catch(e => console.warn('[products:variants] insert warning', e));
+    try {
+      const variantsToInsert = body.variants.map(v => ({
+        product_id: productId,
+        variant_name: v.variant_name,
+        price: typeof v.price === 'string' ? parseFloat(v.price) : v.price,
+        stock_quantity: typeof v.stock_quantity === 'string' ? parseInt(v.stock_quantity, 10) : v.stock_quantity,
+        sku: v.sku,
+        image_url: v.image_url || null,
+        color: v.color || null
+      }));
+      console.log('[products:create] inserting variants', { count: variantsToInsert.length, variantsToInsert });
+      const { error: insertError, data: insertedData } = await supabaseServer().from('product_variants').insert(variantsToInsert).select();
+      console.log('[products:create] variants insert result', { insertError, insertedCount: insertedData?.length || 0 });
+      if (insertError) {
+        console.warn('[products:variants] insert warning', insertError);
+        createdDataErrors.push(`Failed to insert variants: ${insertError.message}`);
+      }
+    } catch (e) {
+      console.error('[products:create] variants insert exception', e);
+      createdDataErrors.push(`Variants insert exception: ${e.message}`);
+    }
   }
 
   if (body.specifications && Array.isArray(body.specifications) && body.specifications.length > 0) {
-    const specsToInsert = body.specifications.map((s, idx) => ({
-      product_id: productId,
-      spec_key: s.spec_key,
-      spec_value: s.spec_value,
-      display_order: idx
-    }));
-    console.log('[products:create] inserting specifications', { count: specsToInsert.length, specsToInsert });
-    const { error: insertError, data: insertedData } = await supabaseServer().from('product_specifications').insert(specsToInsert).select();
-    console.log('[products:create] specifications insert result', { insertError, insertedCount: insertedData?.length || 0 });
-    if (insertError) console.warn('[products:specifications] insert warning', insertError);
+    try {
+      const specsToInsert = body.specifications.map((s, idx) => ({
+        product_id: productId,
+        spec_key: s.spec_key,
+        spec_value: s.spec_value,
+        display_order: idx
+      }));
+      console.log('[products:create] inserting specifications', { count: specsToInsert.length, specsToInsert });
+      const { error: insertError, data: insertedData } = await supabaseServer().from('product_specifications').insert(specsToInsert).select();
+      console.log('[products:create] specifications insert result', { insertError, insertedCount: insertedData?.length || 0 });
+      if (insertError) {
+        console.warn('[products:specifications] insert warning', insertError);
+        createdDataErrors.push(`Failed to insert specifications: ${insertError.message}`);
+      }
+    } catch (e) {
+      console.error('[products:create] specifications insert exception', e);
+      createdDataErrors.push(`Specifications insert exception: ${e.message}`);
+    }
   }
 
   if (body.images && Array.isArray(body.images) && body.images.length > 0) {
-    const imagesToInsert = body.images.map((img, idx) => ({
-      product_id: productId,
-      image_url: img.image_url,
-      alt_text: img.alt_text,
-      display_order: idx,
-      is_primary: img.is_primary || idx === 0
-    }));
-    await supabaseServer().from('product_images').insert(imagesToInsert).catch(e => console.warn('[products:images] insert warning', e));
+    try {
+      const imagesToInsert = body.images.map((img, idx) => ({
+        product_id: productId,
+        image_url: img.image_url,
+        alt_text: img.alt_text,
+        display_order: idx,
+        is_primary: img.is_primary || idx === 0
+      }));
+      console.log('[products:create] inserting images', { count: imagesToInsert.length, imagesToInsert });
+      const { error: insertError, data: insertedData } = await supabaseServer().from('product_images').insert(imagesToInsert).select();
+      console.log('[products:create] images insert result', { insertError, insertedCount: insertedData?.length || 0 });
+      if (insertError) {
+        console.warn('[products:images] insert warning', insertError);
+        createdDataErrors.push(`Failed to insert images: ${insertError.message}`);
+      }
+    } catch (e) {
+      console.error('[products:create] images insert exception', e);
+      createdDataErrors.push(`Images insert exception: ${e.message}`);
+    }
   }
+
+  // If there were errors creating related data, log them but continue
+  if (createdDataErrors.length > 0) {
+    console.warn('[products:create] related data creation errors', { productId, errors: createdDataErrors });
+  }
+
+  // Fetch the created related data to return in response
+  const { data: createdVariants } = await supabaseServer()
+    .from('product_variants')
+    .select('*')
+    .eq('product_id', productId)
+    .order('id', { ascending: true })
+    .catch(() => ({ data: [] }));
+
+  const { data: createdSpecifications } = await supabaseServer()
+    .from('product_specifications')
+    .select('*')
+    .eq('product_id', productId)
+    .order('display_order', { ascending: true })
+    .catch(() => ({ data: [] }));
+
+  const { data: createdImages } = await supabaseServer()
+    .from('product_images')
+    .select('*')
+    .eq('product_id', productId)
+    .order('display_order', { ascending: true })
+    .catch(() => ({ data: [] }));
 
   // Revalidate cached pages when new product is created
   try {
@@ -377,7 +463,14 @@ export async function POST(req) {
   } catch (e) {
     console.warn('[products:create] cache revalidation warning', e);
   }
-  return json(201, data);
+
+  console.log('[products:create] product created successfully', { productId, variantCount: createdVariants?.length || 0, specCount: createdSpecifications?.length || 0, imageCount: createdImages?.length || 0 });
+  return json(201, {
+    ...data,
+    variants: createdVariants || [],
+    specifications: createdSpecifications || [],
+    images: createdImages || []
+  });
 }
 
 export async function PUT(req) {
