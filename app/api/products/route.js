@@ -169,9 +169,10 @@ export async function POST(req) {
     // Handle variants update
     if (variants && Array.isArray(variants)) {
       try {
-        console.log('[products:update] updating variants for product', productId, { count: variants.length });
+        console.log('[products:update] updating variants for product', productId, { count: variants.length, variants });
         // Delete existing variants
-        const { error: deleteError } = await supabaseServer().from('product_variants').delete().eq('product_id', productId);
+        const { error: deleteError, count: deleteCount } = await supabaseServer().from('product_variants').delete().eq('product_id', productId);
+        console.log('[products:variants] delete result', { deleteError, deleteCount });
         if (deleteError) console.warn('[products:variants] delete warning', deleteError);
 
         // Insert new variants
@@ -185,7 +186,9 @@ export async function POST(req) {
             image_url: v.image_url || null,
             color: v.color || null
           }));
-          const { error: insertError } = await supabaseServer().from('product_variants').insert(variantsToInsert);
+          console.log('[products:variants] inserting variants', { count: variantsToInsert.length, variantsToInsert });
+          const { error: insertError, data: insertedData } = await supabaseServer().from('product_variants').insert(variantsToInsert).select();
+          console.log('[products:variants] insert result', { insertError, insertedCount: insertedData?.length || 0 });
           if (insertError) console.warn('[products:variants] insert warning', insertError);
         }
       } catch (e) {
@@ -220,9 +223,10 @@ export async function POST(req) {
     // Handle images update
     if (images && Array.isArray(images)) {
       try {
-        console.log('[products:update] updating images for product', productId, { count: images.length });
+        console.log('[products:update] updating images for product', productId, { count: images.length, images });
         // Delete existing images
-        const { error: deleteError } = await supabaseServer().from('product_images').delete().eq('product_id', productId);
+        const { error: deleteError, count: deleteCount } = await supabaseServer().from('product_images').delete().eq('product_id', productId);
+        console.log('[products:images] delete result', { deleteError, deleteCount });
         if (deleteError) console.warn('[products:images] delete warning', deleteError);
 
         // Insert new images
@@ -234,7 +238,9 @@ export async function POST(req) {
             display_order: idx,
             is_primary: img.is_primary || idx === 0
           }));
-          const { error: insertError } = await supabaseServer().from('product_images').insert(imagesToInsert);
+          console.log('[products:images] inserting images', { count: imagesToInsert.length, imagesToInsert });
+          const { error: insertError, data: insertedData } = await supabaseServer().from('product_images').insert(imagesToInsert).select();
+          console.log('[products:images] insert result', { insertError, insertedCount: insertedData?.length || 0 });
           if (insertError) console.warn('[products:images] insert warning', insertError);
         }
       } catch (e) {
