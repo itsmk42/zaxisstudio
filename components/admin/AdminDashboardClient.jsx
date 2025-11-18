@@ -241,6 +241,17 @@ export default function AdminDashboardClient() {
       images: productForm.images || []
     };
 
+    console.log('[addProduct] payload being sent', {
+      hasVariants: payload.variants.length > 0,
+      variantCount: payload.variants.length,
+      variants: payload.variants,
+      hasImages: payload.images.length > 0,
+      imageCount: payload.images.length,
+      images: payload.images,
+      hasSpecs: payload.specifications.length > 0,
+      specCount: payload.specifications.length
+    });
+
     // If in edit mode, update the product
     if (isEditMode && editingProductId) {
       const updatePayload = { ...payload, _method: "PUT", id: editingProductId };
