@@ -23,7 +23,8 @@ function validatePayload(body) {
     price,
     image_url,
     description: body.description || '',
-    sku: body.sku || '',
+    // Truncate SKU to 100 characters (VARCHAR(100) constraint)
+    sku: body.sku ? String(body.sku).substring(0, 100) : '',
     inventory: Number(body.inventory) || 0,
     category: body.category || '',
     tags: body.tags || '',
@@ -198,9 +199,11 @@ export async function POST(req) {
             variant_name: v.variant_name,
             price: typeof v.price === 'string' ? parseFloat(v.price) : v.price,
             stock_quantity: typeof v.stock_quantity === 'string' ? parseInt(v.stock_quantity, 10) : v.stock_quantity,
-            sku: v.sku,
+            // Truncate SKU to 100 characters (VARCHAR(100) constraint)
+            sku: v.sku ? String(v.sku).substring(0, 100) : null,
             image_url: v.image_url || null,
-            color: v.color || null
+            // Truncate color to 100 characters (VARCHAR(100) constraint)
+            color: v.color ? String(v.color).substring(0, 100) : null
           }));
           console.log('[products:variants] inserting variants', { count: variantsToInsert.length, variantsToInsert });
           const { error: insertError, data: insertedData } = await supabaseServer().from('product_variants').insert(variantsToInsert).select();
@@ -369,9 +372,11 @@ export async function POST(req) {
         variant_name: v.variant_name,
         price: typeof v.price === 'string' ? parseFloat(v.price) : v.price,
         stock_quantity: typeof v.stock_quantity === 'string' ? parseInt(v.stock_quantity, 10) : v.stock_quantity,
-        sku: v.sku,
+        // Truncate SKU to 100 characters (VARCHAR(100) constraint)
+        sku: v.sku ? String(v.sku).substring(0, 100) : null,
         image_url: v.image_url || null,
-        color: v.color || null
+        // Truncate color to 100 characters (VARCHAR(100) constraint)
+        color: v.color ? String(v.color).substring(0, 100) : null
       }));
       console.log('[products:create] inserting variants', { count: variantsToInsert.length, variantsToInsert });
       const { error: insertError, data: insertedData } = await supabaseServer().from('product_variants').insert(variantsToInsert).select();

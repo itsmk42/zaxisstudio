@@ -282,9 +282,18 @@ export default function ProductFormSection({
       .replace(/[^A-Z0-9]/g, '-')
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '');
-    const sku = `${baseSKU}-${Date.now().toString().slice(-4)}`;
+    let sku = `${baseSKU}-${Date.now().toString().slice(-4)}`;
+
+    // Truncate to 100 characters if needed (database constraint)
+    if (sku.length > 100) {
+      const truncated = sku.substring(0, 100);
+      notify(`SKU was too long (${sku.length} chars). Truncated to 100 characters: ${truncated}`, 'warning');
+      sku = truncated;
+    } else {
+      notify(`SKU generated: ${sku}`, 'success');
+    }
+
     setProductForm((prev) => ({ ...prev, sku }));
-    notify(`SKU generated: ${sku}`, 'success');
   };
 
   const generateVariantSKU = (index) => {
@@ -299,9 +308,18 @@ export default function ProductFormSection({
       .replace(/[^A-Z0-9]/g, '-')
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '');
-    const sku = `${baseSKU}-${Date.now().toString().slice(-4)}`;
+    let sku = `${baseSKU}-${Date.now().toString().slice(-4)}`;
+
+    // Truncate to 100 characters if needed (database constraint)
+    if (sku.length > 100) {
+      const truncated = sku.substring(0, 100);
+      notify(`SKU was too long (${sku.length} chars). Truncated to 100 characters: ${truncated}`, 'warning');
+      sku = truncated;
+    } else {
+      notify(`Variant SKU generated: ${sku}`, 'success');
+    }
+
     updateVariant(index, 'sku', sku);
-    notify(`Variant SKU generated: ${sku}`, 'success');
   };
 
   const saveDraft = () => {
@@ -612,8 +630,9 @@ export default function ProductFormSection({
               <input
                 id="product-sku"
                 type="text"
+                maxLength="100"
                 value={productForm.sku}
-                onChange={(e) => handleFormChange('sku', e.target.value)}
+                onChange={(e) => handleFormChange('sku', e.target.value.substring(0, 100))}
                 placeholder="Internal code for this product"
                 style={{ flex: 1 }}
               />
@@ -626,6 +645,9 @@ export default function ProductFormSection({
                 Auto-Gen
               </button>
             </div>
+            <small style={{ color: productForm.sku?.length > 90 ? '#e53e3e' : '#999', marginTop: '4px', display: 'block' }}>
+              {(productForm.sku || '').length} / 100 characters
+            </small>
           </div>
 
           <div className="form-group form-col-span">
@@ -974,9 +996,10 @@ export default function ProductFormSection({
                         <div style={{ display: 'flex', gap: '8px' }}>
                           <input
                             type="text"
+                            maxLength="100"
                             placeholder="Variant-specific SKU"
                             value={variant.sku}
-                            onChange={(e) => updateVariant(idx, 'sku', e.target.value)}
+                            onChange={(e) => updateVariant(idx, 'sku', e.target.value.substring(0, 100))}
                             style={{ flex: 1, padding: '8px', borderRadius: '4px', border: '1px solid #d1d5db' }}
                           />
                           <button
@@ -988,6 +1011,9 @@ export default function ProductFormSection({
                             Auto-Gen
                           </button>
                         </div>
+                        <small style={{ fontSize: '11px', color: (variant.sku || '').length > 90 ? '#e53e3e' : '#999', marginTop: '4px', display: 'block' }}>
+                          {(variant.sku || '').length} / 100 characters
+                        </small>
                       </div>
 
                       <div>
