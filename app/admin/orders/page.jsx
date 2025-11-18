@@ -8,6 +8,7 @@ export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [updatingStatus, setUpdatingStatus] = useState({});
 
   useEffect(() => {
     // Check URL query parameter
@@ -31,6 +32,29 @@ export default function AdminOrders() {
       notify('Failed to load orders', 'error');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function updateOrderStatus(orderId, newStatus) {
+    try {
+      setUpdatingStatus(prev => ({ ...prev, [orderId]: true }));
+      const res = await fetch(`/api/orders/details?id=${orderId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (!res.ok) throw new Error('Failed to update status');
+
+      // Update local state
+      setOrders(orders.map(order =>
+        order.id === orderId ? { ...order, status: newStatus } : order
+      ));
+      notify(`Order status updated to ${newStatus}`, 'success');
+    } catch (error) {
+      console.error('Error updating status:', error);
+      notify('Failed to update order status', 'error');
+    } finally {
+      setUpdatingStatus(prev => ({ ...prev, [orderId]: false }));
     }
   }
 
@@ -83,9 +107,25 @@ export default function AdminOrders() {
                   </td>
                   <td>{(order.items || []).length} item(s)</td>
                   <td>
-                    <span className={`status-badge status-${order.status}`}>
-                      {order.status}
-                    </span>
+                    <select
+                      value={order.status}
+                      onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                      disabled={updatingStatus[order.id]}
+                      className="status-select"
+                      style={{
+                        padding: '6px 8px',
+                        borderRadius: '4px',
+                        border: '1px solid #ddd',
+                        fontSize: '12px',
+                        cursor: updatingStatus[order.id] ? 'not-allowed' : 'pointer',
+                        opacity: updatingStatus[order.id] ? 0.6 : 1
+                      }}
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="shipped">Shipped</option>
+                      <option value="delivered">Delivered</option>
+                    </select>
                   </td>
                   <td>{new Date(order.created_at).toLocaleDateString()}</td>
                   <td>
@@ -161,7 +201,7 @@ export default function AdminOrders() {
           color: #3730a3;
         }
 
-        .status-completed {
+        .status-delivered {
           background: #dcfce7;
           color: #166534;
         }

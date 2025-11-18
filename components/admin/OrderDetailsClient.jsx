@@ -80,6 +80,106 @@ export default function OrderDetailsClient({ orderId, onBack }) {
     }
   }
 
+  function printShippingLabel() {
+    const customer = order.customer || {};
+    const items = order.items || [];
+    const total = items.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 1), 0);
+
+    const printWindow = window.open('', '', 'height=600,width=800');
+    const shippingLabelHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Shipping Label - Order #${order.id}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          .label-container { border: 2px solid #000; padding: 20px; max-width: 600px; }
+          .header { text-align: center; margin-bottom: 20px; }
+          .header h1 { margin: 0; font-size: 24px; }
+          .section { margin-bottom: 20px; }
+          .section-title { font-weight: bold; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #000; }
+          .section-content { font-size: 13px; line-height: 1.6; }
+          .address-box { border: 1px solid #000; padding: 15px; margin: 10px 0; }
+          .items-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+          .items-table th, .items-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+          .items-table th { background: #f5f5f5; font-weight: bold; }
+          .total-row { font-weight: bold; font-size: 14px; margin-top: 10px; }
+          @media print { body { margin: 0; } }
+        </style>
+      </head>
+      <body>
+        <div class="label-container">
+          <div class="header">
+            <h1>SHIPPING LABEL</h1>
+            <p>Order #${order.id}</p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">SHIP TO:</div>
+            <div class="address-box">
+              <div class="section-content">
+                <strong>${customer.name || 'N/A'}</strong><br>
+                ${customer.address_line1 || ''}<br>
+                ${customer.address_line2 ? customer.address_line2 + '<br>' : ''}
+                ${customer.landmark ? 'Landmark: ' + customer.landmark + '<br>' : ''}
+                ${customer.city || ''}, ${customer.state || ''} ${customer.pincode || ''}<br>
+                <strong>Phone:</strong> ${customer.phone || 'N/A'}<br>
+                <strong>Email:</strong> ${customer.email || 'N/A'}
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">ORDER DETAILS:</div>
+            <table class="items-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Qty</th>
+                  <th>Price</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${items.map(item => `
+                  <tr>
+                    <td>${item.title || 'N/A'}</td>
+                    <td>${item.quantity || 1}</td>
+                    <td>₹${(item.price || 0).toLocaleString()}</td>
+                    <td>₹${((item.price || 0) * (item.quantity || 1)).toLocaleString()}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+            <div class="total-row">
+              Total Amount: ₹${total.toLocaleString()}
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">PAYMENT METHOD:</div>
+            <div class="section-content">
+              ${order.payment?.method || 'COD'}
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">ORDER DATE:</div>
+            <div class="section-content">
+              ${new Date(order.created_at).toLocaleDateString()} at ${new Date(order.created_at).toLocaleTimeString()}
+            </div>
+          </div>
+        </div>
+        <script>
+          window.print();
+        </script>
+      </body>
+      </html>
+    `;
+    printWindow.document.write(shippingLabelHTML);
+    printWindow.document.close();
+  }
+
   if (loading) {
     return <div style={{ padding: '20px', textAlign: 'center' }}>Loading order details...</div>;
   }
@@ -95,9 +195,14 @@ export default function OrderDetailsClient({ orderId, onBack }) {
 
   return (
     <div className="order-details-container">
-      <button onClick={onBack} className="btn btn-secondary" style={{ marginBottom: '20px' }}>
-        ← Back to Orders
-      </button>
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+        <button onClick={onBack} className="btn btn-secondary">
+          ← Back to Orders
+        </button>
+        <button onClick={printShippingLabel} className="btn btn-primary">
+          🖨️ Print Shipping Label
+        </button>
+      </div>
 
       <div className="order-details-grid">
         {/* Order Header */}
@@ -126,8 +231,7 @@ export default function OrderDetailsClient({ orderId, onBack }) {
               <option value="pending">Pending</option>
               <option value="confirmed">Confirmed</option>
               <option value="shipped">Shipped</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="delivered">Delivered</option>
             </select>
           </div>
         </div>
@@ -327,7 +431,7 @@ export default function OrderDetailsClient({ orderId, onBack }) {
           color: #3730a3;
         }
 
-        .status-completed {
+        .status-delivered {
           background: #dcfce7;
           color: #166534;
         }

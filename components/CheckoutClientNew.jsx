@@ -479,7 +479,7 @@ export default function CheckoutClientNew() {
             )}
             {step === 3 && (
               <button type="submit" className="btn btn-primary" disabled={isLoading}>
-                {isLoading ? 'Processing...' : `Pay ₹${total.toLocaleString()}`}
+                {isLoading ? 'Processing...' : 'Place Your Order'}
               </button>
             )}
           </div>
