@@ -14,22 +14,25 @@ export async function GET(req) {
     let query = supabaseServer().from('orders').select('*');
 
     if (email) {
-      query = query.ilike('customer->email', `%${email}%`);
+      // Use filter with ilike for JSONB field - search customer->email
+      query = query.filter('customer->email', 'ilike', `%${email}%`);
     } else if (phone) {
-      query = query.ilike('customer->phone', `%${phone}%`);
+      // Use filter with ilike for JSONB field - search customer->phone
+      query = query.filter('customer->phone', 'ilike', `%${phone}%`);
     }
 
     const { data, error } = await query.order('created_at', { ascending: false });
 
     if (error) {
       console.error('Error searching orders:', error);
-      return new NextResponse(error.message, { status: 500 });
+      console.error('Error details:', error.message, error.code);
+      return new NextResponse(JSON.stringify({ error: error.message, code: error.code }), { status: 500 });
     }
 
     return NextResponse.json(data || []);
   } catch (err) {
     console.error('Error in search endpoint:', err);
-    return new NextResponse('Internal server error', { status: 500 });
+    return new NextResponse(JSON.stringify({ error: 'Internal server error', details: err.message }), { status: 500 });
   }
 }
 

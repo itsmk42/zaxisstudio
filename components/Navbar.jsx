@@ -82,6 +82,7 @@ export default function Navbar() {
             <Link className="nav-link" href="/products">Products</Link>
             <Link className="nav-link" href="/custom-keychain">Custom Keychain</Link>
             <Link className="nav-link" href="/custom">Custom Orders</Link>
+            <Link className="nav-link" href="/track-order">Track Order</Link>
             <Link className="nav-link" href="/cart">Cart</Link>
             <Link className="nav-link" href="/login" aria-label="Login">Login</Link>
           </div>

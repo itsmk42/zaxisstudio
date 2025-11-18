@@ -20,6 +20,7 @@ export default function MobileMenu({ open, onClose }) {
         <Link className="mobile-link" href="/products" onClick={onClose}>Products</Link>
         <Link className="mobile-link" href="/custom-keychain" onClick={onClose}>Custom Keychain</Link>
         <Link className="mobile-link" href="/custom" onClick={onClose}>Custom Orders</Link>
+        <Link className="mobile-link" href="/track-order" onClick={onClose}>Track Order</Link>
         <Link className="mobile-link" href="/cart" onClick={onClose}>Cart</Link>
         <Link className="mobile-link" href="/login" onClick={onClose}>Login</Link>
       </div>
