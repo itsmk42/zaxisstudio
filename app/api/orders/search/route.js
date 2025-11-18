@@ -14,11 +14,13 @@ export async function GET(req) {
     let query = supabaseServer().from('orders').select('*');
 
     if (email) {
-      // Use filter with ilike for JSONB field - search customer->email
-      query = query.filter('customer->email', 'ilike', `%${email}%`);
+      // Use contains for JSONB field - search customer.email
+      // contains() checks if the JSONB object contains the specified key-value pair
+      query = query.contains('customer', { email });
     } else if (phone) {
-      // Use filter with ilike for JSONB field - search customer->phone
-      query = query.filter('customer->phone', 'ilike', `%${phone}%`);
+      // Use contains for JSONB field - search customer.phone
+      // contains() checks if the JSONB object contains the specified key-value pair
+      query = query.contains('customer', { phone });
     }
 
     const { data, error } = await query.order('created_at', { ascending: false });
