@@ -190,8 +190,8 @@ export async function POST(req) {
           const variantsToInsert = variants.map(v => ({
             product_id: productId,
             variant_name: v.variant_name,
-            price: v.price,
-            stock_quantity: v.stock_quantity,
+            price: typeof v.price === 'string' ? parseFloat(v.price) : v.price,
+            stock_quantity: typeof v.stock_quantity === 'string' ? parseInt(v.stock_quantity, 10) : v.stock_quantity,
             sku: v.sku,
             image_url: v.image_url || null,
             color: v.color || null
