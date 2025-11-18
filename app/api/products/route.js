@@ -176,6 +176,9 @@ export async function POST(req) {
       return json(404, { error: 'Product not found' });
     }
 
+    // Track errors from related data updates
+    const relatedDataErrors = [];
+
     // Handle variants update
     if (variants && Array.isArray(variants)) {
       try {
@@ -183,7 +186,10 @@ export async function POST(req) {
         // Delete existing variants
         const { error: deleteError, count: deleteCount } = await supabaseServer().from('product_variants').delete().eq('product_id', productId);
         console.log('[products:variants] delete result', { deleteError, deleteCount });
-        if (deleteError) console.warn('[products:variants] delete warning', deleteError);
+        if (deleteError) {
+          console.warn('[products:variants] delete warning', deleteError);
+          relatedDataErrors.push(`Failed to delete existing variants: ${deleteError.message}`);
+        }
 
         // Insert new variants
         if (variants.length > 0) {
@@ -199,10 +205,14 @@ export async function POST(req) {
           console.log('[products:variants] inserting variants', { count: variantsToInsert.length, variantsToInsert });
           const { error: insertError, data: insertedData } = await supabaseServer().from('product_variants').insert(variantsToInsert).select();
           console.log('[products:variants] insert result', { insertError, insertedCount: insertedData?.length || 0 });
-          if (insertError) console.warn('[products:variants] insert warning', insertError);
+          if (insertError) {
+            console.warn('[products:variants] insert warning', insertError);
+            relatedDataErrors.push(`Failed to insert variants: ${insertError.message}`);
+          }
         }
       } catch (e) {
         console.error('[products:update] variants update exception', e);
+        relatedDataErrors.push(`Variants update exception: ${e.message}`);
       }
     }
 
@@ -237,7 +247,10 @@ export async function POST(req) {
         // Delete existing images
         const { error: deleteError, count: deleteCount } = await supabaseServer().from('product_images').delete().eq('product_id', productId);
         console.log('[products:images] delete result', { deleteError, deleteCount });
-        if (deleteError) console.warn('[products:images] delete warning', deleteError);
+        if (deleteError) {
+          console.warn('[products:images] delete warning', deleteError);
+          relatedDataErrors.push(`Failed to delete existing images: ${deleteError.message}`);
+        }
 
         // Insert new images
         if (images.length > 0) {
@@ -251,11 +264,21 @@ export async function POST(req) {
           console.log('[products:images] inserting images', { count: imagesToInsert.length, imagesToInsert });
           const { error: insertError, data: insertedData } = await supabaseServer().from('product_images').insert(imagesToInsert).select();
           console.log('[products:images] insert result', { insertError, insertedCount: insertedData?.length || 0 });
-          if (insertError) console.warn('[products:images] insert warning', insertError);
+          if (insertError) {
+            console.warn('[products:images] insert warning', insertError);
+            relatedDataErrors.push(`Failed to insert images: ${insertError.message}`);
+          }
         }
       } catch (e) {
         console.error('[products:update] images update exception', e);
+        relatedDataErrors.push(`Images update exception: ${e.message}`);
       }
+    }
+
+    // If there were errors updating related data, return error response
+    if (relatedDataErrors.length > 0) {
+      console.error('[products:update] related data update errors', { productId, errors: relatedDataErrors });
+      return json(400, { error: 'Failed to update product related data', details: relatedDataErrors });
     }
 
     // Revalidate cached pages when product is updated
