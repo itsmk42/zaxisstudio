@@ -219,10 +219,14 @@ export async function POST(req) {
     // Handle specifications update
     if (specifications && Array.isArray(specifications)) {
       try {
-        console.log('[products:update] updating specifications for product', productId, { count: specifications.length });
+        console.log('[products:update] updating specifications for product', productId, { count: specifications.length, specifications });
         // Delete existing specifications
-        const { error: deleteError } = await supabaseServer().from('product_specifications').delete().eq('product_id', productId);
-        if (deleteError) console.warn('[products:specifications] delete warning', deleteError);
+        const { error: deleteError, count: deleteCount } = await supabaseServer().from('product_specifications').delete().eq('product_id', productId);
+        console.log('[products:specifications] delete result', { deleteError, deleteCount });
+        if (deleteError) {
+          console.warn('[products:specifications] delete warning', deleteError);
+          relatedDataErrors.push(`Failed to delete specifications: ${deleteError.message}`);
+        }
 
         // Insert new specifications
         if (specifications.length > 0) {
@@ -232,11 +236,17 @@ export async function POST(req) {
             spec_value: s.spec_value,
             display_order: idx
           }));
-          const { error: insertError } = await supabaseServer().from('product_specifications').insert(specsToInsert);
-          if (insertError) console.warn('[products:specifications] insert warning', insertError);
+          console.log('[products:specifications] inserting specifications', { count: specsToInsert.length, specsToInsert });
+          const { error: insertError, data: insertedData } = await supabaseServer().from('product_specifications').insert(specsToInsert).select();
+          console.log('[products:specifications] insert result', { insertError, insertedCount: insertedData?.length || 0 });
+          if (insertError) {
+            console.warn('[products:specifications] insert warning', insertError);
+            relatedDataErrors.push(`Failed to insert specifications: ${insertError.message}`);
+          }
         }
       } catch (e) {
         console.error('[products:update] specifications update exception', e);
+        relatedDataErrors.push(`Specifications update exception: ${e.message}`);
       }
     }
 
@@ -343,7 +353,10 @@ export async function POST(req) {
       spec_value: s.spec_value,
       display_order: idx
     }));
-    await supabaseServer().from('product_specifications').insert(specsToInsert).catch(e => console.warn('[products:specifications] insert warning', e));
+    console.log('[products:create] inserting specifications', { count: specsToInsert.length, specsToInsert });
+    const { error: insertError, data: insertedData } = await supabaseServer().from('product_specifications').insert(specsToInsert).select();
+    console.log('[products:create] specifications insert result', { insertError, insertedCount: insertedData?.length || 0 });
+    if (insertError) console.warn('[products:specifications] insert warning', insertError);
   }
 
   if (body.images && Array.isArray(body.images) && body.images.length > 0) {

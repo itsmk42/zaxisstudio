@@ -249,7 +249,8 @@ export default function AdminDashboardClient() {
       imageCount: payload.images.length,
       images: payload.images,
       hasSpecs: payload.specifications.length > 0,
-      specCount: payload.specifications.length
+      specCount: payload.specifications.length,
+      specifications: payload.specifications
     });
 
     // If in edit mode, update the product
@@ -259,8 +260,12 @@ export default function AdminDashboardClient() {
         productId: editingProductId,
         payloadKeys: Object.keys(updatePayload),
         hasVariants: !!updatePayload.variants,
+        variantCount: updatePayload.variants?.length || 0,
         hasSpecs: !!updatePayload.specifications,
-        hasImages: !!updatePayload.images
+        specCount: updatePayload.specifications?.length || 0,
+        specifications: updatePayload.specifications,
+        hasImages: !!updatePayload.images,
+        imageCount: updatePayload.images?.length || 0
       });
 
       const res = await fetch("/api/products", {

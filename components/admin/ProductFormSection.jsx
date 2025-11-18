@@ -376,7 +376,7 @@ export default function ProductFormSection({
   };
 
   const addSpecification = () => {
-    const specs = productForm.specifications || [];
+    const specs = [...(productForm.specifications || [])];
     specs.push({ spec_key: '', spec_value: '' });
     setProductForm({ ...productForm, specifications: specs });
   };
