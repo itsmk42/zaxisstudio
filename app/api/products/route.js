@@ -113,6 +113,16 @@ export async function POST(req) {
     const form = await req.formData();
     body = Object.fromEntries(form);
   }
+
+  console.log('[products:POST] received request', {
+    method: body._method,
+    hasId: !!body.id,
+    bodyKeys: Object.keys(body),
+    hasVariants: 'variants' in body,
+    hasImages: 'images' in body,
+    hasSpecs: 'specifications' in body
+  });
+
   // Explicit environment sanity for writes: requires service role key
   if (!process.env.SUPABASE_URL) {
     return json(500, { error: 'Supabase URL not configured (SUPABASE_URL).' });
