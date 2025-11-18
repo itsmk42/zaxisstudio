@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import ProductGallery from './ProductGallery';
 import ProductVariantsDisplay from './ProductVariantsDisplay';
 import QuantitySelector from './QuantitySelector';
@@ -7,8 +8,10 @@ import Accordion from './Accordion';
 import ReviewsSection from './ReviewsSection';
 import RelatedProducts from './RelatedProducts';
 import AddToCartButton from './AddToCartButton';
+import { addToCart } from '../lib/cart';
 
 export default function ProductDetailClient({ product, relatedProducts = [] }) {
+  const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState(
     product.variants && product.variants.length > 0 ? product.variants[0] : null
@@ -29,6 +32,28 @@ export default function ProductDetailClient({ product, relatedProducts = [] }) {
   if (typeof window !== 'undefined') {
     window.addEventListener('scroll', handleScroll);
   }
+
+  // Handle Buy Now - add to cart and redirect to checkout
+  const handleBuyNow = () => {
+    // Build the item to add to cart
+    const itemToAdd = selectedVariant
+      ? {
+          ...product,
+          id: `${product.id}-variant-${selectedVariant.id}`,
+          variantId: selectedVariant.id,
+          price: selectedVariant.price,
+          title: `${product.title} - ${selectedVariant.variant_name}`,
+          image_url: selectedVariant.image_url || product.image_url,
+          quantity: quantity
+        }
+      : { ...product, quantity };
+
+    // Add to cart
+    addToCart(itemToAdd);
+
+    // Redirect to checkout
+    router.push('/checkout');
+  };
 
   const isStock = !product.image_url || /picsum\.photos/i.test(product.image_url);
   const productImage = isStock ? '/placeholder.svg' : product.image_url;
@@ -163,13 +188,13 @@ export default function ProductDetailClient({ product, relatedProducts = [] }) {
                 selectedVariant={selectedVariant}
                 quantity={quantity}
               />
-              <a
+              <button
                 className="btn buy-now"
-                href={`/checkout?buy=${product.id}${selectedVariant ? `&variant=${selectedVariant.id}` : ''}`}
+                onClick={handleBuyNow}
                 aria-label={`Buy ${product.title} now`}
               >
                 Buy Now
-              </a>
+              </button>
             </div>
 
             {/* Trust badges */}
@@ -189,16 +214,16 @@ export default function ProductDetailClient({ product, relatedProducts = [] }) {
             <div className="sticky-cta-content">
               <div className="sticky-price">
                 <span className="price-label">Price:</span>
-                <span className="price-value">₹{product.price}</span>
+                <span className="price-value">₹{selectedVariant ? selectedVariant.price : product.price}</span>
               </div>
-              <AddToCartButton product={product} />
-              <a
+              <AddToCartButton product={product} selectedVariant={selectedVariant} quantity={quantity} />
+              <button
                 className="btn buy-now"
-                href={`/checkout?buy=${product.id}`}
+                onClick={handleBuyNow}
                 aria-label={`Buy ${product.title} now`}
               >
                 Buy Now
-              </a>
+              </button>
             </div>
           </div>
         </div>

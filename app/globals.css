@@ -1287,9 +1287,9 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
 .gallery-main {
   position: relative;
   width: 100%;
-  aspect-ratio: 3/4;
+  aspect-ratio: 1/1;
   background: var(--cool-gray);
-  border-radius: 12px;
+  border-radius: 0;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -1361,11 +1361,12 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
   position: absolute;
   bottom: 12px;
   right: 12px;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
   color: white;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
+  padding: 8px 14px;
+  border-radius: 0;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .gallery-thumbnails {
@@ -1378,9 +1379,9 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
 .gallery-thumbnail {
   flex-shrink: 0;
   width: 80px;
-  height: 100px;
+  height: 80px;
   border: 2px solid transparent;
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1479,7 +1480,7 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
   padding: 24px;
   background: white;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 0;
 }
 
 /* Variants */
@@ -1546,7 +1547,7 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
   padding: 10px 16px;
   border: 1px solid var(--border);
   background: white;
-  border-radius: 24px;
+  border-radius: 0;
   cursor: pointer;
   transition: all 0.2s ease;
   font-weight: 500;
@@ -1579,7 +1580,7 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
   padding: 12px;
   border: 2px solid var(--border);
   background: white;
-  border-radius: 8px;
+  border-radius: 0;
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: center;
@@ -1819,7 +1820,7 @@ a:hover, a:focus, a:focus-visible { text-decoration: none; }
   flex-direction: column;
   gap: 8px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
 }
 
