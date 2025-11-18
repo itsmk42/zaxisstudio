@@ -64,10 +64,23 @@ export default function AdminDashboardClient() {
     try {
       setLoading((l) => ({ ...l, products: true }));
       const res = await fetch("/api/products");
+      console.log('[fetchProducts] response status:', res.status);
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error('[fetchProducts] API error:', { status: res.status, error: errorText });
+        notify(`Failed to load products: ${res.status}`, "error");
+        setProducts([]);
+        return;
+      }
+
       const data = await res.json();
+      console.log('[fetchProducts] received data:', { count: Array.isArray(data) ? data.length : 'not-array', data });
       setProducts(Array.isArray(data) ? data : []);
     } catch (e) {
-      notify("Failed to load products", "error");
+      console.error('[fetchProducts] exception:', e);
+      notify("Failed to load products: " + e.message, "error");
+      setProducts([]);
     } finally {
       setLoading((l) => ({ ...l, products: false }));
     }

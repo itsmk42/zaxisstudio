@@ -33,44 +33,65 @@ function validatePayload(body) {
 }
 
 export async function GET() {
-  const { data, error } = await supabaseServer().from('products').select('*');
-  if (error) return new NextResponse(error.message, { status: 500 });
+  try {
+    const { data, error } = await supabaseServer().from('products').select('*');
+    if (error) {
+      console.error('[products:GET] error fetching products:', error);
+      return new NextResponse(error.message, { status: 500 });
+    }
 
-  // Fetch related data for each product (variants, specifications, images)
-  const productsWithRelated = await Promise.all((data || []).map(async (product) => {
-    // Fetch variants
-    const { data: variants } = await supabaseServer()
-      .from('product_variants')
-      .select('*')
-      .eq('product_id', product.id)
-      .order('id', { ascending: true })
-      .catch(() => ({ data: [] }));
+    console.log('[products:GET] fetched products:', { count: data?.length || 0 });
 
-    // Fetch specifications
-    const { data: specifications } = await supabaseServer()
-      .from('product_specifications')
-      .select('*')
-      .eq('product_id', product.id)
-      .order('display_order', { ascending: true })
-      .catch(() => ({ data: [] }));
+    // Fetch related data for each product (variants, specifications, images)
+    const productsWithRelated = await Promise.all((data || []).map(async (product) => {
+      try {
+        // Fetch variants
+        const { data: variants } = await supabaseServer()
+          .from('product_variants')
+          .select('*')
+          .eq('product_id', product.id)
+          .order('id', { ascending: true })
+          .catch(() => ({ data: [] }));
 
-    // Fetch images
-    const { data: images } = await supabaseServer()
-      .from('product_images')
-      .select('*')
-      .eq('product_id', product.id)
-      .order('display_order', { ascending: true })
-      .catch(() => ({ data: [] }));
+        // Fetch specifications
+        const { data: specifications } = await supabaseServer()
+          .from('product_specifications')
+          .select('*')
+          .eq('product_id', product.id)
+          .order('display_order', { ascending: true })
+          .catch(() => ({ data: [] }));
 
-    return {
-      ...product,
-      variants: variants || [],
-      specifications: specifications || [],
-      images: images || []
-    };
-  }));
+        // Fetch images
+        const { data: images } = await supabaseServer()
+          .from('product_images')
+          .select('*')
+          .eq('product_id', product.id)
+          .order('display_order', { ascending: true })
+          .catch(() => ({ data: [] }));
 
-  return NextResponse.json(productsWithRelated || []);
+        return {
+          ...product,
+          variants: variants || [],
+          specifications: specifications || [],
+          images: images || []
+        };
+      } catch (err) {
+        console.error('[products:GET] error fetching related data for product', product.id, err);
+        return {
+          ...product,
+          variants: [],
+          specifications: [],
+          images: []
+        };
+      }
+    }));
+
+    console.log('[products:GET] returning products with related data:', { count: productsWithRelated?.length || 0 });
+    return NextResponse.json(productsWithRelated || []);
+  } catch (err) {
+    console.error('[products:GET] unexpected error:', err);
+    return new NextResponse('Internal server error', { status: 500 });
+  }
 }
 
 export async function POST(req) {
