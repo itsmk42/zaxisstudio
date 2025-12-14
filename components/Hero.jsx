@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -8,6 +8,12 @@ export default function Hero({ slides = [] }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [displayedText, setDisplayedText] = useState('');
+  const [imageErrors, setImageErrors] = useState({});
+
+  // Handle image load errors - fallback to placeholder
+  const handleImageError = useCallback((slideId) => {
+    setImageErrors(prev => ({ ...prev, [slideId]: true }));
+  }, []);
 
   // Typewriter animation effect
   useEffect(() => {
@@ -89,9 +95,13 @@ export default function Hero({ slides = [] }) {
           {/* Carousel slides */}
           <div className="carousel-slides">
             {heroSlides.map((slide, index) => {
+              // Check if we should use placeholder (no image, stock image, or load error)
+              const hasImageError = imageErrors[slide.id];
               const isStockImg = !slide.image_url || /picsum\.photos/i.test(slide.image_url);
-              const imgSrc = isStockImg ? '/placeholder.svg' : slide.image_url;
-              const imgAlt = isStockImg ? `Image Coming Soon — ${slide.title}` : slide.title;
+              const usePlaceholder = isStockImg || hasImageError;
+              const imgSrc = usePlaceholder ? '/placeholder.svg' : slide.image_url;
+              const imgAlt = usePlaceholder ? `Image Coming Soon — ${slide.title}` : slide.title;
+              const isSvg = imgSrc.endsWith('.svg');
 
               return (
                 <div
@@ -99,14 +109,27 @@ export default function Hero({ slides = [] }) {
                   className={`carousel-slide ${index === currentSlide ? 'active' : ''}`}
                   aria-hidden={index !== currentSlide}
                 >
-                  <Image
-                    src={imgSrc}
-                    alt={imgAlt}
-                    width={1200}
-                    height={600}
-                    priority={index === currentSlide}
-                    className="carousel-image"
-                  />
+                  {isSvg ? (
+                    // Use standard img tag for SVGs to avoid Next.js Image issues
+                    <img
+                      src={imgSrc}
+                      alt={imgAlt}
+                      className="carousel-image"
+                      loading={index === currentSlide ? "eager" : "lazy"}
+                      onError={() => handleImageError(slide.id)}
+                    />
+                  ) : (
+                    // Use Next.js Image for optimized loading of regular images
+                    <Image
+                      src={imgSrc}
+                      alt={imgAlt}
+                      width={1200}
+                      height={600}
+                      priority={index === currentSlide}
+                      className="carousel-image"
+                      onError={() => handleImageError(slide.id)}
+                    />
+                  )}
 
                   {/* Slide overlay */}
                   <div className="carousel-overlay">
