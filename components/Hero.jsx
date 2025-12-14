@@ -95,10 +95,11 @@ export default function Hero({ slides = [] }) {
           {/* Carousel slides */}
           <div className="carousel-slides">
             {heroSlides.map((slide, index) => {
-              // Check if we should use placeholder (no image, stock image, or load error)
+              // Check if we should use placeholder (no image or load error)
               const hasImageError = imageErrors[slide.id];
-              const isStockImg = !slide.image_url || /picsum\.photos/i.test(slide.image_url);
-              const usePlaceholder = isStockImg || hasImageError;
+              // Only use placeholder if image_url is empty/null/undefined, or if it failed to load
+              const hasValidImageUrl = slide.image_url && slide.image_url.trim() !== '';
+              const usePlaceholder = !hasValidImageUrl || hasImageError;
               const imgSrc = usePlaceholder ? '/placeholder.svg' : slide.image_url;
               const imgAlt = usePlaceholder ? `Image Coming Soon — ${slide.title}` : slide.title;
               const isSvg = imgSrc.endsWith('.svg');
