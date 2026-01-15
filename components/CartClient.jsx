@@ -15,13 +15,13 @@ export default function CartClient() {
         {items.map((p) => (
           <li key={p.id} className="cart-item">
             <span>{p.title}</span>
-            <span>₹{p.price}</span>
+            <span className="numeric">₹{p.price}</span>
             <button className="btn" onClick={() => { removeFromCart(p.id); setItems(getCart()); }}>Remove</button>
           </li>
         ))}
       </ul>
       <div className="cart-footer">
-        <span>Total: ₹{total}</span>
+        <span>Total: <span className="numeric">₹{total}</span></span>
         <a className="btn primary" href="/checkout">Proceed to Checkout</a>
         <button className="btn" onClick={() => { clearCart(); setItems([]); }}>Clear</button>
       </div>

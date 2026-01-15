@@ -12,9 +12,19 @@ export const revalidate = 60;
 export default async function ProductsPage() {
   const products = await listProducts();
   return (
-    <section>
-      <h1 className="page-title">Products</h1>
-      <ProductsGrid products={products} showCustomLithophane={true} />
-    </section>
+    <div className="products-page">
+      <header className="products-page-header">
+        <div className="container">
+          <span className="section-badge">🎨 Shop Collection</span>
+          <h1 className="page-title">Our Products</h1>
+          <p className="products-subtitle">
+            Handcrafted 3D printed items with precision and care
+          </p>
+        </div>
+      </header>
+      <div className="container">
+        <ProductsGrid products={products} showCustomLithophane={true} />
+      </div>
+    </div>
   );
 }

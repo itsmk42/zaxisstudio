@@ -224,13 +224,13 @@ export default function CheckoutClientNew() {
               {items.map((p) => (
                 <li key={p.id} className="cart-item">
                   <span>{p.title}</span>
-                  <span>₹{p.price?.toLocaleString()}</span>
+                  <span className="numeric">₹{p.price?.toLocaleString()}</span>
                 </li>
               ))}
             </ul>
             <div className="cart-footer">
               <span>Total:</span>
-              <span className="total-amount">₹{total.toLocaleString()}</span>
+              <span className="total-amount numeric">₹{total.toLocaleString()}</span>
             </div>
           </div>
         </div>

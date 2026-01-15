@@ -52,11 +52,11 @@ export default function CheckoutClient() {
           {items.map((p) => (
             <li key={p.id} className="cart-item">
               <span>{p.title}</span>
-              <span>₹{p.price}</span>
+              <span className="numeric">₹{p.price}</span>
             </li>
           ))}
         </ul>
-        <div className="cart-footer"><span>Total: ₹{total}</span></div>
+        <div className="cart-footer"><span>Total: <span className="numeric">₹{total}</span></span></div>
       </div>
       <form className="checkout-form" onSubmit={placeOrder}>
         <h2>Shipping Details</h2>

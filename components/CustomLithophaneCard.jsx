@@ -42,11 +42,11 @@ export default function CustomLithophaneCard() {
         <div className="lithophane-pricing">
           <span className="price-option">
             <span className="price-label">Keychain:</span>
-            <span className="price-value">₹499</span>
+            <span className="price-value numeric">₹499</span>
           </span>
           <span className="price-option">
             <span className="price-label">With Light:</span>
-            <span className="price-value">₹899</span>
+            <span className="price-value numeric">₹899</span>
           </span>
         </div>
         <div className="card-actions">

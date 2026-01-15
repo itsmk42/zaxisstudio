@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+import { ShoppingCart, Check } from 'lucide-react';
 import { addToCart } from '../lib/cart';
 
 export default function AddToCartButton({ product, selectedVariant = null, quantity = 1 }) {
@@ -28,12 +29,22 @@ export default function AddToCartButton({ product, selectedVariant = null, quant
 
   return (
     <button
-      className="btn add-to-cart"
+      className={`btn product-btn-cart ${added ? 'added' : ''}`}
       onClick={onClick}
       aria-label={added ? 'Added to cart' : 'Add to cart'}
       aria-disabled={added ? 'true' : 'false'}
     >
-      {added ? '✓ Added!' : '🛒 Add to Cart'}
+      {added ? (
+        <>
+          <Check size={16} aria-hidden="true" />
+          Added!
+        </>
+      ) : (
+        <>
+          <ShoppingCart size={16} aria-hidden="true" />
+          Add to Cart
+        </>
+      )}
     </button>
   );
 }
